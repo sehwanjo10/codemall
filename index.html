@@ -4,7 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CODEMALL | 시크릿 좌표</title>
+    
+    <!-- [SEO 1] 사이트 제목: 한글 '코드몰'을 반드시 포함해야 검색에 유리합니다 -->
+    <title>코드몰 (CODEMALL) - 시크릿 좌표 & 최저가 검색</title>
+    
+    <!-- [SEO 2] 사이트 설명: 검색 결과 제목 아래에 보이는 문구입니다 -->
+    <meta name="description" content="원하는 상품의 코드를 입력하면 최저가 좌표로 즉시 연결해주는 코드몰(CODEMALL). 복잡한 검색 없이 시크릿 코드로 쇼핑하세요.">
+    
+    <!-- [SEO 3] 키워드: 검색 엔진에게 이 사이트의 핵심 단어를 알려줍니다 -->
+    <meta name="keywords" content="코드몰, CODEMALL, 시크릿좌표, 쿠팡파트너스, 최저가코드, 핫딜, 쇼핑좌표">
+    <meta name="author" content="CODEMALL">
+
+    <!-- [SEO 4] 검색 로봇 허용 설정 -->
+    <meta name="robots" content="index, follow">
+    
+    <!-- [SEO 5] 대표 URL 설정 (중복 문서 방지) -->
+    <link rel="canonical" href="https://codemall.kr">
+
+    <!-- [SNS 공유 최적화] 카카오톡/페이스북 공유 시 보이는 설정 (Open Graph) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://codemall.kr">
+    <meta property="og:title" content="코드몰 (CODEMALL) - 시크릿 좌표">
+    <meta property="og:description" content="코드만 입력하면 끝! 최저가 시크릿 좌표로 이동합니다.">
+    <meta property="og:site_name" content="코드몰">
+    <!-- 이미지가 있다면 아래 content에 이미지 주소를 넣으세요 (없으면 기본값) -->
+    <meta property="og:image" content="https://codemall.kr/og-image.jpg">
+
+    <!-- ==================================================================== -->
+    <!-- [중요] 네이버/구글 소유권 확인 메타 태그 넣는 곳 -->
+    <!-- 네이버 서치어드바이저에서 발급받은 HTML 태그를 아래 줄에 붙여넣으세요 -->
+    <!-- <meta name="naver-site-verification" content="네이버에서_준_코드_복사_붙여넣기" /> -->
+    
+    <!-- 구글 서치콘솔에서 발급받은 HTML 태그를 아래 줄에 붙여넣으세요 -->
+    <!-- <meta name="google-site-verification" content="구글에서_준_코드_복사_붙여넣기" /> -->
+    <!-- ==================================================================== -->
+
     <!-- Tailwind CSS (스타일링 프레임워크) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 폰트: Outfit(영문/숫자) + Pretendard(국문) -->
@@ -230,6 +264,7 @@
             </div>
 
             <!-- 로고 -->
+            <!-- [SEO 6] 검색 엔진이 사이트의 제목으로 인식하는 H1 태그 -->
             <h1 class="text-5xl md:text-6xl font-black tracking-tighter font-brand text-slate-900 mb-2 drop-shadow-sm">
                 CODE<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">MALL</span>
             </h1>
@@ -271,14 +306,11 @@
                 <span>존재하지 않는 코드입니다.</span>
             </div>
 
-            <!-- 하단 텍스트(Unlock 등) 삭제됨 -->
             <div class="h-4"></div>
 
-            <p class="text-[10px] text-slate-400">© 2024 CODEMALL. All rights reserved.</p>
+            <p class="text-[10px] text-slate-400">© 2025 CODEMALL. All rights reserved.</p>
         </main>
     </div>
-
-    <!-- Product Modal Removed (Simplified Flow) -->
 
     <!-- Disclaimer Modal (Legal Requirement) -->
     <div id="disclaimer-overlay"
@@ -317,13 +349,12 @@
         // ----------------------------------------------------
         // [CONFIG] 관리자 설정 (Simplified)
         // ----------------------------------------------------
-        // admin_guide.md를 참고하여 [웹에 게시] > [CSV] 링크를 아래에 붙여넣으세요.
         const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmDDKo1CVpdTMxnS-BPbKORkq-QPufxdSNykhuRoG21roroWU5DXCngRgS8M3fdMM6bEG4RwiRXIre/pub?gid=0&single=true&output=csv';
 
         // ----------------------------------------------------
         // [LOGIC] 데이터 로드 & 앱 초기화
         // ----------------------------------------------------
-        let dataMap = {}; // Use Map for O(1) lookup: { "101": "https://..." }
+        let dataMap = {}; 
         let targetUrl = '';
 
         const card = document.querySelector('.tilt-card');
@@ -353,41 +384,31 @@
                 }
             } catch (e) {
                 console.warn('Fallback Error', e);
-                // Alert only if running locally (common CORS issue)
-                if (window.location.protocol === 'file:') {
-                    alert("⚠️ [보안 경고] 로컬 파일(file://)에서는 구글 시트 연동이 차단될 수 있습니다.\n\n웹 서버(GitHub Pages 등)에 배포하면 정상 작동합니다.\n또는 VSCode의 'Live Server' 기능을 이용하세요.");
-                }
-                // Do NOT fallback to Coupang. Keep empty to show 'Invalid Code' instead of wrong redirect.
                 dataMap = {};
             }
         }
 
-        // Robust CSV Parser (Auto-detect headers)
         function parseCSV(text) {
             const lines = text.split('\n').filter(l => l.trim());
             if (lines.length === 0) return {};
 
-            // 1. Try to find headers
             const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
             let codeIdx = headers.indexOf('code');
             let linkIdx = headers.indexOf('link');
 
-            // 2. Fallback: If headers not found, assume Col A = Code, Col B = Link
             let startRow = 1;
             if (codeIdx === -1 || linkIdx === -1) {
-                // Check if it looks like data (e.g. "101,http...")
                 if (lines[0].includes('http')) {
-                    startRow = 0; // No header row, start from 0
+                    startRow = 0; 
                     codeIdx = 0;
                     linkIdx = 1;
                 } else {
-                    return {}; // Validation failed
+                    return {}; 
                 }
             }
 
             const map = {};
             lines.slice(startRow).forEach(line => {
-                // Robust split: Handle commas inside quotes? (Simple MVP logic for now)
                 const cols = line.split(',').map(c => c.trim());
                 if (cols[codeIdx] && cols[linkIdx]) {
                     map[cols[codeIdx]] = cols[linkIdx];
@@ -405,7 +426,6 @@
             const xVal = (e.clientX - width / 2) / (width / 2);
             const yVal = (e.clientY - height / 2) / (height / 2);
 
-            // Interaction Sensitivity
             const rotateY = xVal * 10;
             const rotateX = -yVal * 10;
             card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(1.02)`;
@@ -425,7 +445,6 @@
             const code = inputField.value.trim();
             if (!code) return;
 
-            // Loading
             inputField.disabled = true;
             iconSearch.classList.add('hidden');
             iconLoading.classList.remove('hidden');
@@ -439,7 +458,6 @@
                 inputField.focus();
 
                 if (link) {
-                    // Success -> Direct to Disclaimer
                     openDisclaimer(link);
                 } else {
                     showError();
@@ -477,7 +495,7 @@
 
         btnProceed.onclick = () => {
             if (targetUrl) {
-                window.open(targetUrl, '_blank'); // 새 탭으로 열기
+                window.open(targetUrl, '_blank'); 
                 closeDisclaimer();
             }
         };
