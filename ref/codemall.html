@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODEMALL | 시크릿 좌표</title>
+    <!-- Tailwind CSS (스타일링 프레임워크) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 폰트: Outfit(영문/숫자) + Pretendard(국문) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Pretendard:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* 1. 폰트 및 기본 설정 */
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #ffffff;
+            color: #111827;
+            overflow: hidden; /* 스크롤 방지 */
+        }
+        .font-brand {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* 2. 오로라 메쉬 그라디언트 배경 */
+        .aurora-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: 
+                radial-gradient(at 0% 0%, rgba(167, 243, 208, 0.6) 0px, transparent 50%),
+                radial-gradient(at 98% 1%, rgba(196, 181, 253, 0.6) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(147, 197, 253, 0.6) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(252, 165, 165, 0.4) 0px, transparent 50%);
+            background-size: 150% 150%;
+            animation: auroraFlow 15s ease infinite alternate;
+        }
+        @keyframes auroraFlow {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* 3. 둥둥 떠다니는 3D 오브젝트 */
+        .float-obj {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px);
+            z-index: -1;
+            animation: float 10s infinite ease-in-out;
+            opacity: 0.7;
+        }
+        .obj-1 { top: 10%; left: 10%; width: 300px; height: 300px; background: #a5f3fc; animation-delay: 0s; }
+        .obj-2 { bottom: 20%; right: 10%; width: 250px; height: 250px; background: #ddd6fe; animation-delay: -2s; }
+        .obj-3 { top: 40%; left: 50%; width: 200px; height: 200px; background: #fde68a; animation-delay: -4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.1); }
+        }
+
+        /* 4. 글래스모피즘 카드 */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 20px 50px -12px rgba(0, 0, 0, 0.1),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+        }
+
+        /* 5. 3D 틸트 효과 */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+        
+        /* 6. 입력창 디자인 */
+        .vault-input {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .vault-input:focus {
+            background: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            transform: scale(1.02);
+        }
+
+        /* 로딩 스피너 애니메이션 */
+        .loading-spin {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen items-center justify-center relative">
+
+    <!-- 배경 요소 -->
+    <div class="aurora-bg"></div>
+    <div class="float-obj obj-1"></div>
+    <div class="float-obj obj-2"></div>
+    <div class="float-obj obj-3"></div>
+
+    <!-- 메인 컨테이너 -->
+    <div id="tilt-container" class="relative z-10 w-full max-w-md px-6 perspective-1000">
+        <main class="glass-panel tilt-card rounded-[2.5rem] p-8 md:p-12 text-center relative overflow-hidden">
+            
+            <!-- 상단 뱃지 -->
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 mb-6 shadow-sm">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                </span>
+                <span class="text-[11px] font-bold tracking-wider text-blue-600 uppercase font-brand">Secret Gateway</span>
+            </div>
+
+            <!-- 로고 -->
+            <h1 class="text-5xl md:text-6xl font-black tracking-tighter font-brand text-slate-900 mb-2 drop-shadow-sm">
+                CODE<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">MALL</span>
+            </h1>
+            <!-- 수정된 문구 -->
+            <p class="text-slate-500 text-sm font-medium mb-12 tracking-tight">궁금했던 그 제품, <span class="text-slate-900 font-bold bg-white/50 px-1 rounded">코드로 즉시 연결</span></p>
+
+            <!-- 입력창 영역 -->
+            <div id="search-box" class="relative group mb-6">
+                <input 
+                    type="tel" 
+                    id="code-input" 
+                    placeholder="CODE # _ _ _" 
+                    class="vault-input w-full border border-slate-200/50 rounded-2xl py-5 px-6 text-center text-2xl font-bold font-brand tracking-widest text-slate-800 placeholder-slate-300 outline-none"
+                    maxlength="4"
+                    autocomplete="off"
+                >
+                <!-- 검색 아이콘 (로딩 시 스피너로 변경됨) -->
+                <button onclick="checkCode()" id="search-btn" class="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-xl bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300">
+                    <svg id="icon-search" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                    <svg id="icon-loading" class="h-6 w-6 hidden loading-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 에러 메시지 -->
+            <div id="error-msg" class="h-6 text-red-500 text-xs font-bold transition-opacity opacity-0 flex items-center justify-center gap-1 mb-2">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>존재하지 않는 코드입니다.</span>
+            </div>
+
+            <!-- 하단 텍스트(Unlock 등) 삭제됨 -->
+            <div class="h-4"></div> 
+            
+            <p class="text-[10px] text-slate-400">© 2024 CODEMALL. All rights reserved.</p>
+        </main>
+    </div>
+
+    <script>
+        // ----------------------------------------------------
+        // [DATA] 상품 데이터베이스
+        // ----------------------------------------------------
+        const productDB = {
+            '100': {
+                // 직접 이동할 링크 (쿠팡 파트너스 링크 등)
+                link: 'https://coupang.com' 
+            },
+            '101': {
+                link: 'https://coupang.com'
+            },
+            '777': {
+                link: 'https://aliexpress.com'
+            }
+        };
+
+        // ----------------------------------------------------
+        // [INTERACTION] 3D Tilt 효과
+        // ----------------------------------------------------
+        const container = document.getElementById('tilt-container');
+        const card = container.querySelector('.tilt-card');
+
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 25;
+            const y = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+        });
+        
+        // ----------------------------------------------------
+        // [LOGIC] 코드 검색 및 리다이렉트
+        // ----------------------------------------------------
+        const inputField = document.getElementById('code-input');
+        const errorMsg = document.getElementById('error-msg');
+        const searchBtn = document.getElementById('search-btn');
+        const iconSearch = document.getElementById('icon-search');
+        const iconLoading = document.getElementById('icon-loading');
+
+        inputField.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkCode();
+        });
+
+        inputField.addEventListener('input', () => {
+            errorMsg.style.opacity = '0';
+            inputField.classList.remove('border-red-500', 'bg-red-50');
+        });
+
+        function checkCode() {
+            const code = inputField.value.trim();
+            
+            // 로딩 상태 시작
+            inputField.disabled = true;
+            iconSearch.classList.add('hidden');
+            iconLoading.classList.remove('hidden');
+            
+            // 데이터 조회 (약간의 딜레이로 처리 중인 느낌 연출 후 이동)
+            setTimeout(() => {
+                const product = productDB[code];
+                
+                if (product) {
+                    // 성공: 바로 페이지 이동
+                    // 새 창으로 띄우려면 window.open(product.link, '_blank');
+                    // 현재 창에서 이동하려면 window.location.href = product.link;
+                    window.location.href = product.link;
+                    
+                    // 이동 후 로딩 상태 유지 (사용자가 페이지 떠날 때까지)
+                } else {
+                    // 실패: 에러 표시 및 로딩 종료
+                    inputField.disabled = false;
+                    inputField.focus();
+                    iconSearch.classList.remove('hidden');
+                    iconLoading.classList.add('hidden');
+
+                    inputField.classList.add('border-red-500', 'bg-red-50');
+                    errorMsg.style.opacity = '1';
+                    
+                    const box = document.getElementById('search-box');
+                    box.animate([
+                        { transform: 'translateX(0)' },
+                        { transform: 'translateX(-5px)' },
+                        { transform: 'translateX(5px)' },
+                        { transform: 'translateX(0)' }
+                    ], { duration: 200 });
+                }
+            }, 600); // 0.6초 딜레이 (처리 느낌)
+        }
+    </script>
+</body>
+</html>

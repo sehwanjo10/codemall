@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아빠는 외계인 - Link in Bio</title>
+    <meta name="description" content="아빠는 외계인 유튜브 및 인스타그램과 시청자들을 위한 유용한 웹앱 모음입니다.">
+    <!-- Google Fonts: Pretendard -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-anim">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    
+    <div class="container">
+        <!-- Search Bar -->
+        <header class="header">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="searchInput" placeholder="콘텐츠 또는 웹앱 검색...">
+            </div>
+        </header>
+
+        <!-- Profile Section -->
+        <section class="profile-section">
+            <div class="profile-img-container">
+                <img src="https://yt3.googleusercontent.com/D1AWdmNtzwfA-jhMXuFZXnH6grY87EJc0s5xxtPZhwrdooWIlc_JviSBjvYPd2KgeCeAubUzASw=s160-c-k-c0x00ffffff-no-rj" alt="아빠는 외계인 프로필" class="profile-img">
+            </div>
+            <h1 class="profile-name">아빠는 외계인</h1>
+            <p class="profile-bio">코딩하는 아빠와 함께하는 스마트한 라이프 ✨</p>
+            
+            <div class="social-links">
+                <a href="https://www.youtube.com/@et_dad" class="social-btn youtube" target="_blank">
+                    <i class="fa-brands fa-youtube"></i> 유튜브
+                </a>
+                <a href="https://www.instagram.com/et.dad/" class="social-btn instagram" target="_blank">
+                    <i class="fa-brands fa-instagram"></i> 인스타그램
+                </a>
+            </div>
+        </section>
+
+        <!-- Featured Content -->
+        <section class="section">
+            <h2 class="section-title"><i class="fa-solid fa-fire"></i> 인기 / 최신 컨텐츠</h2>
+            <div class="scroll-wrapper">
+                <button class="scroll-btn scroll-left" id="scrollLeft"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="horizontal-scroll" id="contentContainer">
+                    <div class="loading-spinner" style="padding: 20px; color: var(--text-secondary); text-align: center; width: 100%;">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> 유튜브 영상을 불러오는 중...
+                    </div>
+                </div>
+                <button class="scroll-btn scroll-right" id="scrollRight"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- Web Apps Section -->
+        <section class="section">
+            <h2 class="section-title"><i class="fa-solid fa-rocket"></i> 웹앱 모음</h2>
+            <p class="section-desc">영상에 소개되었던 유용한 도구들을 직접 사용해보세요!</p>
+            <div class="grid-container" id="appContainer">
+                <a href="./page/01/index.html" class="app-card intercepted-link" target="_blank">
+                    <div class="app-icon"><i class="fa-solid fa-car"></i></div>
+                    <div class="app-details">
+                        <h3>자동차 로고 월드컵</h3>
+                        <p>이안이와 함께 맞혀보는 자동차 로고 게임!</p>
+                    </div>
+                </a>
+            </div>
+            <div id="noResults" class="no-results hidden">
+                <i class="fa-regular fa-face-frown"></i>
+                <p>검색 결과가 없습니다.</p>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <p>이 포스팅은 쿠팡 파트너스 활동의 일환으로,<br>이에 따른 일정액의 수수료를 제공받습니다.</p>
+            <p class="copyright">© 아빠는 외계인. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Coupang Support Modal -->
+    <div class="modal-overlay hidden" id="coupangModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalClose"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-icon">👨‍👧</div>
+            <h2>아빠와 이안이 응원하기!</h2>
+            <p>이 콘텐츠는 무료로 제공됩니다.<br>아래 버튼을 눌러 <strong>쿠팡을 한 번 구경해 주시면</strong><br>채널 운영과 이안이 간식에 큰 힘이 됩니다! 🍪</p>
+            <button class="support-btn" id="supportBtn">쿠팡 구경하고 바로 이동하기</button>
+            <button class="skip-btn" id="skipBtn">괜찮습니다, 바로 이동할게요</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
