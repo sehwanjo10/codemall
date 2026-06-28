@@ -49,15 +49,39 @@
         <!-- Result Screen -->
         <div id="result-screen" class="screen">
             <h1 class="title">🎉 최종 우승! 🎉</h1>
-            <div class="winner-display">
-                <img id="winner-img" src="" alt="우승 로고">
-                <h2 id="winner-name" class="winner-name"></h2>
+            
+            <div id="share-card-content" class="share-card">
+                <div class="winner-display">
+                    <img id="res-winner-img" src="" alt="우승 로고">
+                    <h2 class="winner-subtitle">오늘의 선택 결과는?</h2>
+                </div>
+                
+                <div class="result-analysis">
+                    <div class="main-type">
+                        <span id="res-main-emoji" class="type-emoji"></span>
+                        <h3 id="res-main-title" class="type-title"></h3>
+                    </div>
+                    <p id="res-main-desc" class="type-desc"></p>
+                    
+                    <div id="res-badges" class="badges-container"></div>
+                    
+                    <p id="res-sub-comment" class="sub-comment"></p>
+                </div>
+                
+                <div class="share-footer">
+                    <p>우리 아이도 해보기 👉 <strong>codemall.kr</strong></p>
+                </div>
             </div>
-            <button id="restart-btn" class="primary-btn">다시 하기</button>
+            
+            <div class="action-buttons">
+                <button id="download-btn" class="secondary-btn">결과 저장하기</button>
+                <button id="restart-btn" class="primary-btn">다시 하기</button>
+            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

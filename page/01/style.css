@@ -219,36 +219,134 @@ body {
     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(253, 160, 133, 0); }
 }
 
-/* Winner Screen */
-.winner-display {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(15px);
-    border-radius: 30px;
-    padding: 40px;
-    margin: 30px 0;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    animation: float 3s ease-in-out infinite;
+/* Result Screen & Share Card */
+.share-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px auto;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    color: #333;
+    text-align: center;
 }
 
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
+.winner-display {
+    padding-bottom: 20px;
+    border-bottom: 2px dashed #eee;
+    margin-bottom: 20px;
 }
 
 .winner-display img {
-    max-width: 300px;
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+    max-width: 180px;
+    margin: 0 auto 15px auto;
+    display: block;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
 }
 
-.winner-name {
-    font-size: 3rem;
+.winner-subtitle {
+    font-size: 1.2rem;
+    color: #777;
+    margin: 0;
+}
+
+.result-analysis {
+    margin-bottom: 20px;
+}
+
+.main-type {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.type-emoji {
+    font-size: 2.5rem;
+}
+
+.type-title {
+    font-size: 2rem;
     color: #ff3366;
+    margin: 0;
+}
+
+.type-desc {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    word-break: keep-all;
+}
+
+.badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.badge-item {
+    background: #fdf0f4;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #d81b60;
+    border: 1px solid #f8bbd0;
+}
+
+.sub-comment {
+    font-size: 1rem;
+    color: #888;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    font-style: italic;
+    word-break: keep-all;
+}
+
+.share-footer {
+    background: #ff758c;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.share-footer p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
     margin-top: 20px;
-    text-transform: uppercase;
+}
+
+.secondary-btn {
+    background: #fff;
+    color: #ff758c;
+    border: 2px solid #ff758c;
+    padding: 15px 30px;
+    font-size: 1.5rem;
+    font-family: 'Jua', sans-serif;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+    background: #fff0f3;
+    transform: scale(1.05);
 }
 
 /* Deck Area */
