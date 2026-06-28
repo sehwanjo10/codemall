@@ -322,6 +322,7 @@ function fireConfetti() {
 
 // Download Card
 document.getElementById('download-btn').addEventListener('click', () => {
+    if (typeof gtag === 'function') gtag('event', 'click_worldcup_share', { 'event_category': 'engagement' });
     const card = document.getElementById('share-card-content');
     html2canvas(card, { scale: 2, backgroundColor: '#fdfdfd', useCORS: true }).then(canvas => {
         const link = document.createElement('a');
@@ -332,8 +333,14 @@ document.getElementById('download-btn').addEventListener('click', () => {
 });
 
 // Event Listeners
-if(startBtn) startBtn.addEventListener('click', initGame);
-if(restartBtn) restartBtn.addEventListener('click', initGame);
+if(startBtn) startBtn.addEventListener('click', () => {
+    if (typeof gtag === 'function') gtag('event', 'click_worldcup_start', { 'event_category': 'engagement' });
+    initGame();
+});
+if(restartBtn) restartBtn.addEventListener('click', () => {
+    if (typeof gtag === 'function') gtag('event', 'click_worldcup_restart', { 'event_category': 'engagement' });
+    initGame();
+});
 if(cardLeft) cardLeft.addEventListener('click', () => handleChoice(0));
 if(cardRight) cardRight.addEventListener('click', () => handleChoice(1));
 

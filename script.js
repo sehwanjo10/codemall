@@ -119,12 +119,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = () => modal.classList.add('hidden');
     modalClose.addEventListener('click', closeModal);
     skipBtn.addEventListener('click', () => {
+        if (typeof gtag === 'function') gtag('event', 'click_coupang_skip', { 'event_category': 'monetization' });
         closeModal();
         navigateToTarget();
     });
     
     // Support Button Event
     supportBtn.addEventListener('click', () => {
+        if (typeof gtag === 'function') gtag('event', 'click_coupang_support', { 'event_category': 'monetization' });
         localStorage.setItem('coupang_visited', 'true');
         window.open(COUPANG_URL, '_blank');
         closeModal();
@@ -133,6 +135,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const attachInterceptor = (link) => {
         link.addEventListener('click', (e) => {
+            if (typeof gtag === 'function') {
+                if (link.classList.contains('app-card')) {
+                    gtag('event', 'click_webapp_item', { 'event_category': 'content', 'app_name': link.querySelector('h3')?.textContent || 'App' });
+                }
+            }
+
             const hasVisitedCoupang = localStorage.getItem('coupang_visited');
 
             if (!hasVisitedCoupang) {
@@ -182,6 +190,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     contentContainer.appendChild(card);
                     contentCards.push(card);
+                    
+                    card.addEventListener('click', () => {
+                        if (typeof gtag === 'function') gtag('event', 'click_youtube_item', { 'event_category': 'content', 'video_title': item.title });
+                    });
+                    
                     attachInterceptor(card); // Attach redirect logic to dynamic items
                 });
             } else {
