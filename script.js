@@ -101,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('coupangModal');
     const modalClose = document.getElementById('modalClose');
     const supportBtn = document.getElementById('supportBtn');
-    const skipBtn = document.getElementById('skipBtn');
     
     let currentTargetHref = '';
     let currentTargetType = '';
@@ -118,11 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Modal Close Events
     const closeModal = () => modal.classList.add('hidden');
     modalClose.addEventListener('click', closeModal);
-    skipBtn.addEventListener('click', () => {
-        if (typeof gtag === 'function') gtag('event', 'click_coupang_skip', { 'event_category': 'monetization' });
-        closeModal();
-        navigateToTarget();
-    });
     
     // Support Button Event
     supportBtn.addEventListener('click', () => {
