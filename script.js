@@ -130,21 +130,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTargetHref = '';
     let currentTargetType = '';
 
-    // Safe localStorage wrapper for in-app browsers (like Instagram)
+    // Safe sessionStorage wrapper for in-app browsers (like Instagram)
     const checkVisitedCoupang = () => {
         try {
-            return localStorage.getItem('coupang_visited');
+            return sessionStorage.getItem('coupang_visited');
         } catch (e) {
-            console.warn('localStorage access denied:', e);
+            console.warn('sessionStorage access denied:', e);
             return window._coupangVisitedFallback;
         }
     };
 
     const setVisitedCoupang = () => {
         try {
-            localStorage.setItem('coupang_visited', 'true');
+            sessionStorage.setItem('coupang_visited', 'true');
         } catch (e) {
-            console.warn('localStorage access denied:', e);
+            console.warn('sessionStorage access denied:', e);
         }
         window._coupangVisitedFallback = true;
     };
