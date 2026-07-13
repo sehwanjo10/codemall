@@ -58,10 +58,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const appCards = document.querySelectorAll('.app-card');
     const noResults = document.getElementById('noResults');
+    const profileSection = document.querySelector('.profile-section');
+    
+    // Select the sections to hide them if they are empty
+    const contentSection = document.getElementById('contentContainer').closest('.section');
+    const appSection = document.getElementById('appContainer').closest('.section');
 
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
         let hasResults = false;
+        let hasContentResults = false;
+        let hasAppResults = false;
+
+        // Hide Profile Section when searching
+        if (query.length > 0) {
+            profileSection.style.display = 'none';
+        } else {
+            profileSection.style.display = 'flex';
+        }
 
         // Filter App Cards
         appCards.forEach(card => {
@@ -71,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (title.includes(query) || desc.includes(query)) {
                 card.classList.remove('hidden');
                 hasResults = true;
+                hasAppResults = true;
             } else {
                 card.classList.add('hidden');
             }
@@ -83,10 +98,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (title.includes(query)) {
                 card.classList.remove('hidden');
                 hasResults = true;
+                hasContentResults = true;
             } else {
                 card.classList.add('hidden');
             }
         });
+        
+        // Hide empty sections when searching
+        if (query.length > 0) {
+            contentSection.style.display = hasContentResults ? 'block' : 'none';
+            appSection.style.display = hasAppResults ? 'block' : 'none';
+        } else {
+            contentSection.style.display = 'block';
+            appSection.style.display = 'block';
+        }
 
         // Toggle No Results Message
         if (!hasResults && query.length > 0) {
