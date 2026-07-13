@@ -130,6 +130,41 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTargetHref = '';
     let currentTargetType = '';
 
+    // Safe localStorage wrapper for in-app browsers (like Instagram)
+    const checkVisitedCoupang = () => {
+        try {
+            return localStorage.getItem('coupang_visited');
+        } catch (e) {
+            console.warn('localStorage access denied:', e);
+            return window._coupangVisitedFallback;
+        }
+    };
+
+    const setVisitedCoupang = () => {
+        try {
+            localStorage.setItem('coupang_visited', 'true');
+        } catch (e) {
+            console.warn('localStorage access denied:', e);
+        }
+        window._coupangVisitedFallback = true;
+    };
+
+    // 4. Shared Link Target Routing Logic
+    const urlParams = new URLSearchParams(window.location.search);
+    const target = urlParams.get('target');
+    
+    if (target === 'frog' || target === 'worldcup') {
+        const hasVisitedCoupang = checkVisitedCoupang();
+        currentTargetHref = target === 'frog' ? './page/02/index.html' : './page/01/index.html';
+        currentTargetType = '_self';
+        
+        if (!hasVisitedCoupang) {
+            modal.classList.remove('hidden');
+        } else {
+            window.location.href = currentTargetHref;
+        }
+    };
+
     // Function to navigate to the original link
     const navigateToTarget = () => {
         if (currentTargetType === '_blank') {
@@ -146,8 +181,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Support Button Event
     supportBtn.addEventListener('click', () => {
         if (typeof gtag === 'function') gtag('event', 'click_coupang_support', { 'event_category': 'monetization' });
-        localStorage.setItem('coupang_visited', 'true');
-        window.open(COUPANG_URL, '_blank');
+        setVisitedCoupang();
+        
+        try {
+            window.open(COUPANG_URL, '_blank');
+        } catch (e) {
+            window.location.href = COUPANG_URL; // fallback if window.open is blocked
+        }
+        
         closeModal();
         setTimeout(navigateToTarget, 300);
     });
@@ -160,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            const hasVisitedCoupang = localStorage.getItem('coupang_visited');
+            const hasVisitedCoupang = checkVisitedCoupang();
 
             if (!hasVisitedCoupang) {
                 e.preventDefault();
