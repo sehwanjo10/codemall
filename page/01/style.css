@@ -301,6 +301,21 @@ body {
     border: 1px solid #f8bbd0;
 }
 
+.radar-container {
+    margin: 10px auto 15px;
+    max-width: 280px;
+}
+
+.compare-comment {
+    font-size: 0.95rem;
+    color: #7b5cff;
+    background: #f3f0ff;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    word-break: keep-all;
+}
+
 .sub-comment {
     font-size: 1rem;
     color: #888;

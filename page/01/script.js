@@ -49,15 +49,24 @@ const carBrands = [
 ];
 
 const resultTypes = [
-    { axis: 'A', pole: 'neg', name: "그림을 보는 아이", emoji: "🦁", line: "글자나 기호보다 그림·동물이 들어간 로고에 끌렸어요. 눈에 보이는 구체적인 걸 좋아하는 시기예요." },
-    { axis: 'A', pole: 'pos', name: "기호를 읽는 아이", emoji: "🔷", line: "동그라미·별 같은 추상적인 기호를 척척 골랐어요. 상징을 이해하는 힘이 자라고 있어요." },
-    { axis: 'B', pole: 'neg', name: "깔끔함을 좋아하는 아이", emoji: "⚪", line: "복잡한 그림보다 단순하고 또렷한 로고를 좋아했어요. 핵심을 빠르게 잡는 스타일이에요." },
-    { axis: 'B', pole: 'pos', name: "구석구석 보는 아이", emoji: "🛡️", line: "디테일이 많고 복잡한 문장(엠블럼) 로고에 끌렸어요. 자세히 뜯어보는 관찰력이 보여요." },
-    { axis: 'C', pole: 'neg', name: "차분한 아이", emoji: "🟢", line: "둥글고 안정적인 로고를 많이 골랐어요. 편안하고 익숙한 걸 좋아하는 마음이 보여요." },
-    { axis: 'C', pole: 'pos', name: "씩씩한 아이", emoji: "⚡", line: "날카롭고 속도감 있는 로고에 끌렸어요. 빠르고 멋진 걸 좋아하는 에너지가 느껴져요." },
-    { axis: 'D', pole: 'neg', name: "아는 걸 고르는 아이", emoji: "🐾", line: "동물처럼 이미 아는 것이 담긴 로고를 골랐어요. 익숙함에서 안정을 느끼는 시기예요." },
-    { axis: 'D', pole: 'pos', name: "새로운 걸 찾는 아이", emoji: "🔭", line: "낯설고 처음 보는 형태에도 망설임이 없었어요. 호기심과 탐색을 즐기는 신호예요." }
+    { axis: 'A', pole: 'neg', name: "그림을 보는 아이", core: "그림을 보는", combineAdj: "그림을 좋아하고", emoji: "🦁", line: "글자나 기호보다 그림·동물이 들어간 로고에 끌렸어요. 눈에 보이는 구체적인 걸 좋아하는 시기예요." },
+    { axis: 'A', pole: 'pos', name: "기호를 읽는 아이", core: "기호를 읽는", combineAdj: "기호를 좋아하고", emoji: "🔷", line: "동그라미·별 같은 추상적인 기호를 척척 골랐어요. 상징을 이해하는 힘이 자라고 있어요." },
+    { axis: 'B', pole: 'neg', name: "깔끔함을 좋아하는 아이", core: "깔끔함을 좋아하는", combineAdj: "깔끔한 걸 좋아하고", emoji: "⚪", line: "복잡한 그림보다 단순하고 또렷한 로고를 좋아했어요. 핵심을 빠르게 잡는 스타일이에요." },
+    { axis: 'B', pole: 'pos', name: "구석구석 보는 아이", core: "구석구석 보는", combineAdj: "구석구석 살피고", emoji: "🛡️", line: "디테일이 많고 복잡한 문장(엠블럼) 로고에 끌렸어요. 자세히 뜯어보는 관찰력이 보여요." },
+    { axis: 'C', pole: 'neg', name: "차분한 아이", core: "차분한", combineAdj: "차분하고", emoji: "🟢", line: "둥글고 안정적인 로고를 많이 골랐어요. 편안하고 익숙한 걸 좋아하는 마음이 보여요." },
+    { axis: 'C', pole: 'pos', name: "씩씩한 아이", core: "씩씩한", combineAdj: "씩씩하고", emoji: "⚡", line: "날카롭고 속도감 있는 로고에 끌렸어요. 빠르고 멋진 걸 좋아하는 에너지가 느껴져요." },
+    { axis: 'D', pole: 'neg', name: "아는 걸 고르는 아이", core: "아는 걸 고르는", combineAdj: "익숙한 걸 편해하고", emoji: "🐾", line: "동물처럼 이미 아는 것이 담긴 로고를 골랐어요. 익숙함에서 안정을 느끼는 시기예요." },
+    { axis: 'D', pole: 'pos', name: "새로운 걸 찾는 아이", core: "새로운 걸 찾는", combineAdj: "새로운 걸 좋아하고", emoji: "🔭", line: "낯설고 처음 보는 형태에도 망설임이 없었어요. 호기심과 탐색을 즐기는 신호예요." }
 ];
+
+// 레이더 차트에 쓸 축 라벨 (양끝 의미)
+const axisLabels = {
+    A: { neg: '그림', pos: '기호' },
+    B: { neg: '단순', pos: '디테일' },
+    C: { neg: '차분', pos: '씩씩' },
+    D: { neg: '익숙함', pos: '새로움' },
+    E: { neg: '심플', pos: '화려함' }
+};
 
 let currentRound = [];
 let nextRound = [];
@@ -281,12 +290,90 @@ function calculateResult(winner) {
     if (axisScore['E'] > 5) badges.push({ emoji: "✨", name: "반짝이 수집가", text: "화려하고 멋진 엠블럼을 알아봤어요." });
     else if (axisScore['E'] < -5) badges.push({ emoji: "🤍", name: "심플 미학", text: "꾸밈없이 담백한 걸 좋아해요." });
 
+    // 메인+서브를 한 문장으로 자연스럽게 합성 (예: "씩씩하고 그림을 보는 아이")
+    const comboTitle = `${subType.combineAdj} ${mainType.core} 아이`;
+
     return {
         winner,
         mainType,
-        subComment: `그리고 이런 면도 보였어요. ${subType.line}`,
+        subType,
+        comboTitle,
+        axisScore,
+        subComment: subType.line,
         badges
     };
+}
+
+// 5축(A~E) 성향 점수를 레이더 차트 SVG로 그려줌
+function generateRadarSVG(axisScore) {
+    const axes = ['A', 'B', 'C', 'D', 'E'];
+    const cx = 150, cy = 150, R = 100;
+    const maxAbs = 25; // 이론상 최대치 근사값(정규화 기준)
+
+    const points = axes.map((ax, i) => {
+        const angle = (Math.PI * 2 * i) / axes.length - Math.PI / 2;
+        const raw = axisScore[ax] || 0;
+        // -1(neg 끝) ~ 1(pos 끝) 사이로 정규화
+        const norm = Math.max(-1, Math.min(1, raw / maxAbs));
+        // 시각화를 위해 0~1 범위로 이동(중심=0.5, 즉 중간 반경)
+        const r = R * (0.5 + norm * 0.5);
+        return {
+            x: cx + r * Math.cos(angle),
+            y: cy + r * Math.sin(angle),
+            labelX: cx + (R + 34) * Math.cos(angle),
+            labelY: cy + (R + 34) * Math.sin(angle),
+            ax, angle
+        };
+    });
+
+    const polygon = points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+
+    // 배경 격자(3단계)
+    let gridRings = [1, 0.66, 0.33].map(scale => {
+        const ringPts = axes.map((ax, i) => {
+            const angle = (Math.PI * 2 * i) / axes.length - Math.PI / 2;
+            const r = R * scale;
+            return `${(cx + r * Math.cos(angle)).toFixed(1)},${(cy + r * Math.sin(angle)).toFixed(1)}`;
+        }).join(' ');
+        return `<polygon points="${ringPts}" fill="none" stroke="#eee" stroke-width="1"/>`;
+    }).join('');
+
+    const axisLines = points.map(p =>
+        `<line x1="${cx}" y1="${cy}" x2="${(cx + R * Math.cos(p.angle)).toFixed(1)}" y2="${(cy + R * Math.sin(p.angle)).toFixed(1)}" stroke="#ddd" stroke-width="1"/>`
+    ).join('');
+
+    const labels = points.map(p => {
+        const lbl = axisScore[p.ax] >= 0 ? axisLabels[p.ax].pos : axisLabels[p.ax].neg;
+        return `<text x="${p.labelX.toFixed(1)}" y="${p.labelY.toFixed(1)}" font-size="13" fill="#777" text-anchor="middle" dominant-baseline="middle">${lbl}</text>`;
+    }).join('');
+
+    return `
+    <svg viewBox="0 0 300 300" width="100%" height="260" xmlns="http://www.w3.org/2000/svg">
+        ${gridRings}
+        ${axisLines}
+        <polygon points="${polygon}" fill="rgba(255,51,102,0.25)" stroke="#ff3366" stroke-width="2"/>
+        ${points.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="#ff3366"/>`).join('')}
+        ${labels}
+    </svg>`;
+}
+
+// 직전 결과를 localStorage에서 불러와 이번 결과와 비교
+function getPrevResultAndSave(currentComboTitle, winnerName) {
+    const KEY = 'logoWorldcupHistory';
+    let history = [];
+    try {
+        history = JSON.parse(localStorage.getItem(KEY)) || [];
+    } catch (e) {
+        history = [];
+    }
+
+    const prev = history.length > 0 ? history[history.length - 1] : null;
+
+    history.push({ comboTitle: currentComboTitle, winner: winnerName, date: new Date().toISOString() });
+    if (history.length > 5) history = history.slice(-5);
+    localStorage.setItem(KEY, JSON.stringify(history));
+
+    return prev;
 }
 
 function showWinner(winner) {
@@ -295,18 +382,35 @@ function showWinner(winner) {
     resultScreen.classList.add('active');
     
     const result = calculateResult(winner);
-    
+
     // Render Result Card
     document.getElementById('res-winner-img').src = `${BASE_URL}${winner.id}.png`;
     document.getElementById('res-main-emoji').innerText = result.mainType.emoji;
-    document.getElementById('res-main-title').innerText = result.mainType.name;
-    document.getElementById('res-main-desc').innerText = result.mainType.line;
-    
+    document.getElementById('res-main-title').innerText = result.comboTitle;
+    document.getElementById('res-main-desc').innerText = `${result.mainType.line} ${result.subComment}`;
+
     const badgesHtml = result.badges.map(b => `<div class="badge-item"><span class="badge-emoji">${b.emoji}</span> <span class="badge-name">${b.name}</span></div>`).join('');
     document.getElementById('res-badges').innerHTML = badgesHtml;
-    
-    document.getElementById('res-sub-comment').innerText = result.subComment;
-    
+
+    // 5축 성향 레이더 차트
+    const radarContainer = document.getElementById('res-radar');
+    if (radarContainer) radarContainer.innerHTML = generateRadarSVG(result.axisScore);
+
+    // 직전 결과와 비교
+    const prev = getPrevResultAndSave(result.comboTitle, winner.name);
+    const compareEl = document.getElementById('res-compare');
+    if (compareEl) {
+        if (prev && prev.comboTitle !== result.comboTitle) {
+            compareEl.innerText = `📌 지난번엔 "${prev.comboTitle}"였는데, 이번엔 "${result.comboTitle}"로 나왔어요!`;
+            compareEl.style.display = 'block';
+        } else if (prev && prev.comboTitle === result.comboTitle) {
+            compareEl.innerText = `📌 지난번과 똑같이 "${result.comboTitle}"가 나왔어요. 꽤 일관된 성향이네요!`;
+            compareEl.style.display = 'block';
+        } else {
+            compareEl.style.display = 'none';
+        }
+    }
+
     fireConfetti();
 }
 
