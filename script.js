@@ -59,13 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTargetType = '';
 
     // Safe sessionStorage wrapper for in-app browsers (like Instagram)
+    // Temporary bypass: Always return true to disable Coupang modal window
     const checkVisitedCoupang = () => {
-        try {
-            return sessionStorage.getItem('coupang_visited');
-        } catch (e) {
-            console.warn('sessionStorage access denied:', e);
-            return window._coupangVisitedFallback;
-        }
+        return true;
     };
 
     const setVisitedCoupang = () => {
