@@ -122,12 +122,6 @@ body {
     gap: 20px;
 }
 
-@media (max-width: 768px) {
-    .battle-arena {
-        flex-direction: column;
-    }
-}
-
 .logo-card {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(15px);
@@ -147,13 +141,6 @@ body {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     position: relative;
     overflow: hidden;
-}
-
-@media (max-width: 768px) {
-    .logo-card {
-        width: 80%;
-        margin-bottom: 15px;
-    }
 }
 
 .logo-card::before {
@@ -326,18 +313,7 @@ body {
     word-break: keep-all;
 }
 
-.share-footer {
-    background: #ff758c;
-    color: white;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 10px;
-}
 
-.share-footer p {
-    margin: 0;
-    font-size: 1.1rem;
-}
 
 .action-buttons {
     display: flex;
@@ -437,4 +413,246 @@ body {
 @keyframes unselectedAnim {
     0% { opacity: 1; transform: scale(1); }
     100% { opacity: 0; transform: scale(0.8); }
+}
+
+/* Coupang Partners Ads container styled beautifully at the end of the game */
+.coupang-ads-container {
+    margin: 20px auto;
+    padding: 16px 12px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    border: 2px dashed #ff9a9e;
+    max-width: 480px;
+    width: 95%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(255, 154, 158, 0.15);
+    box-sizing: border-box;
+}
+
+.coupang-ads-title {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.2rem;
+    color: #ff5e7e;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+}
+
+.coupang-ads-iframes-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth iOS momentum scrolling */
+    scrollbar-width: thin;
+    scrollbar-color: #ff9a9e rgba(0,0,0,0.02);
+}
+
+/* Custom scrollbar styling for webkit browsers (Chrome, Safari, Edge) */
+.coupang-ads-iframes-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+.coupang-ads-iframes-wrapper::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 10px;
+}
+.coupang-ads-iframes-wrapper::-webkit-scrollbar-thumb {
+    background: #ff9a9e;
+    border-radius: 10px;
+}
+
+.coupang-ads-iframes {
+    display: flex;
+    gap: 12px;
+    padding: 4px 12px 12px 12px;
+    width: max-content;
+    margin: 0 auto;
+}
+
+.coupang-ads-iframes iframe {
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    background-color: #fff;
+    border: none;
+    flex-shrink: 0;
+}
+
+.coupang-ads-notice {
+    font-size: 10px;
+    color: #999;
+    margin-top: 8px;
+    line-height: 1.4;
+    font-family: sans-serif;
+}
+
+@media (max-width: 768px) {
+    /* Main Layout scale adjustments */
+    .app-container {
+        padding: 10px;
+    }
+    
+    .title {
+        font-size: 1.8rem;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+    
+    .subtitle {
+        font-size: 1.0rem;
+        margin-bottom: 15px;
+    }
+    
+    #round-info {
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+    }
+    
+    /* Battle Arena scaling to prevent overflow and keep side-by-side */
+    .battle-arena {
+        flex-direction: row;
+        gap: 8px;
+        justify-content: space-between;
+    }
+    
+    .logo-card {
+        width: 48%;
+        padding: 12px;
+        border-radius: 16px;
+        border-width: 2px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .logo-card img {
+        max-height: 110px;
+    }
+    
+    .brand-name {
+        margin-top: 8px;
+        font-size: 1.0rem;
+        letter-spacing: 0.5px;
+    }
+    
+    /* VS Badge absolute-centered scale down */
+    .vs-badge {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 46px;
+        height: 46px;
+        font-size: 1.1rem;
+        z-index: 100;
+        animation: pulseMobile 2s infinite;
+    }
+    
+    /* Button scale down to fit screen width and avoid overlapping */
+    .primary-btn {
+        font-size: 1.15rem;
+        padding: 8px 20px;
+    }
+    
+    .secondary-btn {
+        font-size: 1.05rem;
+        padding: 8px 16px;
+    }
+    
+    .action-buttons {
+        gap: 8px;
+        margin-top: 10px;
+    }
+    
+    /* Result Screen & Share Card scaling to fit mobile screens perfectly and prevent vertical overflow */
+    .share-card {
+        padding: 12px 10px;
+        margin: 8px auto;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    }
+    
+    .winner-display {
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .winner-display img {
+        max-width: 80px;
+        margin-bottom: 4px;
+    }
+    
+    .winner-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .type-emoji {
+        font-size: 1.8rem;
+    }
+    
+    .type-title {
+        font-size: 1.25rem;
+    }
+    
+    .type-desc {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+    
+    .badges-container {
+        gap: 4px;
+        margin-bottom: 8px;
+    }
+    
+    .badge-item {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 12px;
+    }
+    
+    .radar-container {
+        max-width: 170px;
+        margin: 2px auto 6px;
+    }
+    
+    .compare-comment {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .sub-comment {
+        font-size: 0.82rem;
+        padding: 8px;
+        border-radius: 8px;
+    }
+    
+    /* Coupang Ads container space adjustment for mobile */
+    .coupang-ads-container {
+        margin: 10px auto;
+        padding: 12px 8px;
+        border-radius: 18px;
+    }
+
+    .coupang-ads-title {
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+    }
+    
+    /* Deck Area spacing */
+    .deck-area {
+        margin-top: 20px;
+        padding: 10px;
+    }
+    
+    .deck-title {
+        font-size: 1.0rem;
+    }
+    
+    .mini-card {
+        width: 40px;
+        height: 40px;
+        padding: 4px;
+        border-radius: 8px;
+    }
+}
+
+@keyframes pulseMobile {
+    0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(253, 160, 133, 0.7); }
+    70% { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 0 8px rgba(253, 160, 133, 0); }
+    100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(253, 160, 133, 0); }
 }

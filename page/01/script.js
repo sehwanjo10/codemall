@@ -348,7 +348,7 @@ function generateRadarSVG(axisScore) {
     }).join('');
 
     return `
-    <svg viewBox="0 0 300 300" width="100%" height="260" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 300 300" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         ${gridRings}
         ${axisLines}
         <polygon points="${polygon}" fill="rgba(255,51,102,0.25)" stroke="#ff3366" stroke-width="2"/>
