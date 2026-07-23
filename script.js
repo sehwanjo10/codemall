@@ -77,9 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const target = urlParams.get('target');
     
-    if (target === 'frog' || target === 'worldcup') {
+    if (target === 'frog' || target === 'worldcup' || target === 'treasure') {
         const hasVisitedCoupang = checkVisitedCoupang();
-        currentTargetHref = target === 'frog' ? './page/02/index.html' : './page/01/index.html';
+        currentTargetHref = target === 'frog' ? './page/02/index.html' : 
+                            target === 'worldcup' ? './page/01/index.html' : 
+                            './page/03/treasure-words.html';
         currentTargetType = '_self';
         
         if (!hasVisitedCoupang) {
