@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>보물 글자 놀이 — 문장을 조각내서 아이와 보물찾기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gaegu:wght@700&family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --navy:#173B5E; --navy-soft:#20507C;
+  --gold:#F0B537; --gold-deep:#D99A1C;
+  --coral:#E85D42; --mint:#4FB68B;
+  --cream:#FBF5E9; --paper:#FFFFFF;
+  --ink:#28303B; --muted:#8A94A3; --line:#E7DEC9;
+  --shadow:0 6px 22px rgba(23,59,94,.10);
+  --piece-bg:#FFF6DF; --piece-border:#D99A1C; --piece-ink:#8A5A12;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"Noto Sans KR",sans-serif;color:var(--ink);
+  background:
+    radial-gradient(1200px 500px at 90% -10%, #EAF2F0 0%, transparent 60%),
+    radial-gradient(900px 500px at -10% 10%, #FCEFD6 0%, transparent 55%),
+    var(--cream);
+  min-height:100vh;line-height:1.5;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 18px 90px}
+
+.masthead{display:flex;align-items:center;gap:14px;margin:8px 2px 22px}
+.crest{width:52px;height:52px;flex:0 0 52px;border-radius:16px;
+  background:linear-gradient(150deg,var(--gold),var(--gold-deep));
+  display:grid;place-items:center;font-size:26px;
+  box-shadow:0 6px 16px rgba(217,154,28,.35);transform:rotate(-6deg)}
+.masthead h1{font-family:"Jua",sans-serif;font-weight:400;
+  font-size:clamp(22px,4.4vw,32px);color:var(--navy);margin:0;letter-spacing:-.5px}
+.masthead p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+
+.grid{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;
+  box-shadow:var(--shadow);padding:20px}
+.panel h2{font-family:"Jua",sans-serif;font-weight:400;font-size:16px;color:var(--navy);
+  margin:0 0 4px;display:flex;align-items:center;gap:7px}
+.hint-txt{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+
+label.field{display:block;font-size:12.5px;font-weight:700;color:var(--navy);margin:16px 0 7px}
+label.field:first-of-type{margin-top:2px}
+textarea#sentence{width:100%;min-height:62px;resize:vertical;border:2px solid var(--line);
+  border-radius:14px;padding:12px 13px;font-family:"Noto Sans KR";font-size:17px;color:var(--ink);transition:border-color .15s}
+textarea#sentence:focus{outline:none;border-color:var(--gold)}
+.count{font-size:11.5px;color:var(--muted);text-align:right;margin-top:5px}
+.count.warn{color:var(--coral);font-weight:700}
+
+/* size slider */
+.sizerow{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.sizeval{font-family:"Jua";color:var(--gold-deep);font-size:15px}
+input[type=range]{width:100%;accent-color:var(--coral);height:26px;cursor:pointer}
+.rangehint{font-size:11px;color:var(--muted);margin-top:2px;display:flex;justify-content:space-between}
+
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1 1 auto;min-width:58px;border:2px solid var(--line);background:var(--paper);
+  border-radius:11px;padding:10px 6px;font-family:"Noto Sans KR";font-size:13px;font-weight:700;
+  color:var(--navy-soft);cursor:pointer;transition:.13s}
+.seg button:hover{border-color:var(--gold)}
+.seg button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+/* preview each font on its own button */
+.seg button[data-font="jua"]{font-family:'Jua',sans-serif;font-size:16px}
+.seg button[data-font="gaegu"]{font-family:'Gaegu',cursive;font-size:18px;font-weight:700}
+.seg button[data-font="black"]{font-family:'Black Han Sans',sans-serif;font-size:16px}
+
+.swatches{display:flex;gap:9px}
+.sw{width:34px;height:34px;border-radius:10px;cursor:pointer;border:3px solid transparent;transition:.13s}
+.sw[aria-pressed="true"]{border-color:var(--ink);transform:scale(1.06)}
+.sw.gold{background:#F4C24A}.sw.sea{background:#5FA8D8}.sw.forest{background:#6FC08A}.sw.berry{background:#EC8AB0}
+
+.toggle{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;
+  border:2px solid var(--line);border-radius:13px;margin-top:8px;cursor:pointer;user-select:none}
+.toggle span{font-size:13px;font-weight:700;color:var(--navy)}
+.switch{width:42px;height:24px;border-radius:20px;background:#D9D2C0;position:relative;transition:.15s;flex:0 0 42px}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s}
+.toggle[aria-pressed="true"] .switch{background:var(--mint)}
+.toggle[aria-pressed="true"] .switch::after{left:21px}
+
+.stage-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 2px 14px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;background:#EFE7D4;padding:4px;border-radius:13px}
+.tabs button{border:0;background:transparent;padding:8px 15px;border-radius:10px;font-family:"Jua";font-size:14px;color:var(--navy-soft);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--paper);color:var(--navy);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:0;border-radius:12px;padding:10px 15px;font-family:"Jua";font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.13s}
+.btn.primary{background:var(--coral);color:#fff;box-shadow:0 4px 12px rgba(232,93,66,.32)}
+.btn.primary:hover{background:#d94d33}
+.btn.ghost{background:var(--paper);color:var(--navy);border:2px solid var(--line)}
+.btn.ghost:hover{border-color:var(--gold)}
+
+.view{background:var(--paper);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:22px;min-height:320px}
+.empty{display:grid;place-items:center;text-align:center;padding:54px 20px;color:var(--muted)}
+.empty .big{font-size:40px;margin-bottom:8px}
+.empty h3{font-family:"Jua";font-weight:400;color:var(--navy);font-size:18px;margin:0 0 6px}
+.empty p{margin:0;font-size:13.5px;max-width:280px}
+
+.sheet-label{font-family:"Jua";color:var(--navy);font-size:15px;margin:0 0 3px;display:flex;align-items:center;gap:7px}
+.sheet-sub{font-size:12px;color:var(--muted);margin:0 0 16px}
+
+/* pieces */
+.pieces{display:flex;flex-wrap:wrap;gap:14px}
+.piece{position:relative;background:var(--piece-bg);border:2px dashed var(--piece-border);
+  border-radius:16px;display:grid;place-items:center}
+.piece .num{position:absolute;top:5px;left:5px;min-width:19px;height:19px;padding:0 4px;border-radius:20px;
+  background:var(--navy);color:#fff;font-family:"Noto Sans KR";font-weight:700;font-size:11px;
+  display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.22);z-index:2}
+.piece .scissor{position:absolute;top:-11px;right:12px;font-size:15px;background:var(--paper);padding:0 3px;border-radius:6px}
+.piece .char{line-height:1;color:var(--piece-ink)}
+
+/* board = fixed A4 landscape WYSIWYG frame */
+.a4-frame{
+  container-type:inline-size;
+  width:100%;max-width:820px;margin:0 auto;
+  aspect-ratio:297/210;
+  background:
+    linear-gradient(180deg,#F7FBF9,#EEF5F1);
+  border:2px solid #DCEAE3;border-radius:12px;
+  padding:4cqw 3.37cqw;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2.357cqw;overflow:hidden;
+}
+.a4-frame .brow{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:center;align-items:center;gap:2.357cqw}
+.a4-frame .slot{
+  width:var(--sc);height:var(--sc);
+  background:var(--paper);
+  border:calc(var(--sc)*.045) dashed var(--piece-border);
+  border-radius:calc(var(--sc)*.12);
+  display:grid;place-items:center;position:relative;
+  box-shadow:inset 0 -0.3cqw 0 rgba(0,0,0,.03);
+}
+.a4-frame .slot .snum{
+  position:absolute;top:calc(var(--sc)*-.11);left:calc(var(--sc)*-.09);
+  width:calc(var(--sc)*.26);height:calc(var(--sc)*.26);border-radius:50%;
+  background:var(--navy);color:#fff;font-size:calc(var(--sc)*.14);
+  display:grid;place-items:center;font-family:"Noto Sans KR";font-weight:700}
+.a4-frame .slot .ghost{opacity:.30;color:var(--piece-border);line-height:1;font-size:calc(var(--sc)*.6)}
+.frame-cap{max-width:820px;margin:4px auto 0;font-size:11px;color:var(--muted);text-align:center}
+.overflow-warn{color:var(--coral);font-weight:700}
+.fitbtn{border:0;background:var(--navy);color:#fff;font-family:"Jua";font-size:12px;
+  padding:5px 11px;border-radius:9px;cursor:pointer;margin-left:6px}
+.fitbtn:hover{background:var(--navy-soft)}
+
+.prep{margin-top:22px;background:linear-gradient(180deg,#FFFDF7,#FFF6E4);border:1px solid var(--line);border-radius:20px;padding:20px 22px}
+.prep h2{font-family:"Jua";font-weight:400;color:var(--navy);font-size:16px;margin:0 0 3px;display:flex;gap:7px;align-items:center}
+.prep p.sub{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+.prep-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px}
+.prep-list a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);
+  background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px 13px;transition:.13s;font-size:13.5px}
+.prep-list a:hover{border-color:var(--gold);transform:translateY(-1px)}
+.prep-list .ic{font-size:19px}
+.prep-list .why{display:block;font-size:11px;color:var(--muted);margin-top:1px}
+.prep-note{font-size:11px;color:var(--muted);margin:13px 0 0;line-height:1.6}
+.disclosure{margin-top:10px;font-size:11px;color:var(--muted);background:#FFF;border:1px dashed var(--line);border-radius:10px;padding:9px 11px}
+
+.how{margin-top:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:680px){.how{grid-template-columns:repeat(2,1fr)}}
+.step{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:15px 14px}
+.step .n{font-family:"Jua";color:var(--gold-deep);font-size:13px}
+.step h4{font-family:"Jua";font-weight:400;color:var(--navy);font-size:14px;margin:5px 0 4px}
+.step p{margin:0;font-size:12px;color:var(--muted);line-height:1.55}
+footer{margin-top:30px;text-align:center;color:var(--muted);font-size:12px}
+
+/* ---------- PRINT ---------- */
+.print-only{display:none}
+@media print{
+  body{background:#fff}
+  .wrap{max-width:none;padding:0}
+  .masthead,.grid>.panel,.stage-head,.prep,.how,footer,.view,.tabs,.actions,.frame-cap{display:none !important}
+  .print-only{display:block}
+  @page pp{size:A4 portrait;margin:12mm}
+  @page lp{size:A4 landscape;margin:12mm}
+  .pieces-sheet{page:pp;page-break-after:always}
+  .board-sheet{page:lp}
+  .p-title{font-family:"Jua";color:#000;font-size:14pt;margin:0 0 2mm}
+  .p-sub{font-size:9pt;color:#555;margin:0 0 6mm}
+  .p-pieces{display:flex;flex-wrap:wrap;gap:8mm}
+  .p-piece{border:1.4pt dashed #444;display:grid;place-items:center;position:relative;break-inside:avoid;background:#fff}
+  .p-piece .pn{position:absolute;top:2.5mm;left:2.5mm;min-width:6mm;height:6mm;border-radius:50%;
+    background:#173B5E;color:#fff;font-size:8.5pt;display:grid;place-items:center;font-weight:700}
+  .p-piece .pc{line-height:1;color:#111}
+  .p-board{display:flex;flex-direction:column;gap:7mm;justify-content:center;align-items:center;min-height:170mm}
+  .p-row{display:flex;flex-direction:row;flex-wrap:nowrap;gap:7mm;justify-content:center;align-items:center}
+  .p-slot{border:1.2pt dashed #666;display:grid;place-items:center;position:relative;break-inside:avoid;background:#fff}
+  .p-slot .sn{position:absolute;top:-4mm;left:-3mm;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center}
+  .p-slot .sg{opacity:.16;line-height:1}
+  .p-blank{background:transparent;border:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="masthead">
+    <div class="crest">🗺️</div>
+    <div>
+      <h1>보물 글자 놀이</h1>
+      <p>문장을 한 글자씩 조각내서 → 집안에 숨기고 → 아이가 찾아 판을 채우면 문장 완성!</p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>🧩 조각 만들기</h2>
+      <p class="hint-txt">아이에게 읽어줄 문장을 넣으면 글자 조각과 상황판이 자동으로 만들어져요.</p>
+
+      <label class="field" for="sentence">문장 입력</label>
+      <textarea id="sentence" placeholder="예) 엄마 아빠 사랑해요"></textarea>
+      <div class="count" id="count">0글자</div>
+
+      <label class="field">조각 크기</label>
+      <div class="sizerow"><span style="font-size:12px;color:var(--muted)">슬라이더로 자유 조절</span><span class="sizeval" id="sizeVal">6.0cm</span></div>
+      <input type="range" id="sizeRange" min="2" max="10" step="0.5" value="6">
+      <div class="rangehint"><span>2cm(작게)</span><span>10cm(크게)</span></div>
+
+      <label class="field">글자 모양</label>
+      <div class="seg" id="fontSeg">
+        <button data-font="jua" aria-pressed="true">가나</button>
+        <button data-font="gaegu">가나</button>
+        <button data-font="black">가나</button>
+      </div>
+
+      <label class="field">색 테마</label>
+      <div class="swatches" id="themeSeg">
+        <div class="sw gold" data-theme="gold" aria-pressed="true" title="보물 골드"></div>
+        <div class="sw sea" data-theme="sea" aria-pressed="false" title="바다 파랑"></div>
+        <div class="sw forest" data-theme="forest" aria-pressed="false" title="숲 초록"></div>
+        <div class="sw berry" data-theme="berry" aria-pressed="false" title="딸기 분홍"></div>
+      </div>
+
+      <label class="field">상황판 힌트</label>
+      <div class="toggle" id="hintToggle" aria-pressed="true" role="button" tabindex="0">
+        <span>빈칸에 흐린 글자 보이기</span>
+        <div class="switch"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="stage-head">
+        <div class="tabs" id="tabs">
+          <button data-tab="pieces" aria-pressed="true">보물 조각</button>
+          <button data-tab="board" aria-pressed="false">상황판</button>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="pdfBtn">📄 PDF 저장</button>
+          <button class="btn ghost" id="printBtn">🖨️ 인쇄</button>
+          <button class="btn ghost" id="jpgBtn">🖼️ 낱장 JPG</button>
+        </div>
+      </div>
+
+      <div class="view" id="view"></div>
+      <div class="frame-cap" id="frameCap"></div>
+
+      <div class="how">
+        <div class="step"><div class="n">STEP 1</div><h4>조각 인쇄</h4><p>글자 조각을 A4로 뽑아 가위로 자르고, 코팅하면 오래 써요.</p></div>
+        <div class="step"><div class="n">STEP 2</div><h4>집안에 숨기기</h4><p>순서 상관없이 방·거실 곳곳에 숨겨요. 미션처럼요.</p></div>
+        <div class="step"><div class="n">STEP 3</div><h4>찾아서 채우기</h4><p>아이가 조각을 찾아 상황판 번호에 맞춰 올려요.</p></div>
+        <div class="step"><div class="n">STEP 4</div><h4>문장 읽기</h4><p>다 채우면 한 문장 완성! 소리 내어 함께 읽어요.</p></div>
+      </div>
+
+      <div class="prep">
+        <h2>🧺 놀이 준비물</h2>
+        <p class="sub">이 놀이는 실물 출력·가공이 필요해요. 아래에서 바로 준비하세요.</p>
+        <ul class="prep-list">
+          <li><a href="https://link.coupang.com/a/fv8rAnEcPQ" target="_blank" rel="noopener nofollow sponsored" data-cta="a4"><span class="ic">📄</span><span>A4 용지<span class="why">조각·상황판 출력</span></span></a></li>
+          <li><a href="https://link.coupang.com/a/fv8xdbBTxI" target="_blank" rel="noopener nofollow sponsored" data-cta="laminator"><span class="ic">🛡️</span><span>코팅기<span class="why">조각을 오래 튼튼하게</span></span></a></li>
+          <li><a href="https://link.coupang.com/a/fv8GTmlfaK" target="_blank" rel="noopener nofollow sponsored" data-cta="magnet"><span class="ic">🧲</span><span>잘라 쓰는 자석<span class="why">냉장고·판에 붙이기</span></span></a></li>
+          <li><a href="https://link.coupang.com/a/fv8IzFPgXc" target="_blank" rel="noopener nofollow sponsored" data-cta="scissors"><span class="ic">✂️</span><span>안전가위<span class="why">아이와 함께 오리기</span></span></a></li>
+        </ul>
+        <p class="disclosure">이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+      </div>
+
+      <footer>보물 글자 놀이 · 인쇄해서 아이와 함께 즐기세요</footer>
+    </div>
+  </div>
+</div>
+
+<div class="print-only" id="printArea"></div>
+
+<script>
+const state = { sentence:"", sizeCm:6, font:"jua", theme:"gold", hint:true, tab:"pieces" };
+
+const FONTS = {
+  jua:   { css:"'Jua', sans-serif",          load:'400 100px "Jua"',            w:'' },
+  gaegu: { css:"'Gaegu', cursive",           load:'700 100px "Gaegu"',          w:'700 ' },
+  black: { css:"'Black Han Sans', sans-serif",load:'400 100px "Black Han Sans"', w:'' }
+};
+const THEMES = {
+  gold:  { bg:'#FFF6DF', border:'#D99A1C', ink:'#8A5A12' },
+  sea:   { bg:'#E7F2FB', border:'#3E86C4', ink:'#1E4E7A' },
+  forest:{ bg:'#E9F6EC', border:'#3FA35F', ink:'#1E6636' },
+  berry: { bg:'#FCEAF1', border:'#D96599', ink:'#8E2C5B' }
+};
+const MM_TO_CQW = 100/297;   // A4 landscape width = 297mm mapped to 100cqw
+const SCREEN_PX_PER_CM = 13; // pieces preview scale
+
+const $ = s => document.querySelector(s);
+const view = $('#view');
+const frameCap = $('#frameCap');
+const printArea = $('#printArea');
+
+function graphemes(str){
+  if(window.Intl&&Intl.Segmenter){try{const seg=new Intl.Segmenter('ko',{granularity:'grapheme'});return [...seg.segment(str)].map(s=>s.segment);}catch(e){}}
+  return [...str];
+}
+function words(){ return state.sentence.split(/[\s\u3000]+/).filter(w=>w.length>0).map(w=>graphemes(w)); }
+function letters(){ return words().flat(); }
+function escapeHtml(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+function applyTheme(){
+  const t=THEMES[state.theme];
+  const r=document.documentElement.style;
+  r.setProperty('--piece-bg',t.bg); r.setProperty('--piece-border',t.border); r.setProperty('--piece-ink',t.ink);
+}
+
+function render(){
+  applyTheme();
+  const ff=FONTS[state.font].css;
+  const hasText=letters().length>0;
+
+  if(!hasText){
+    view.className='view';
+    frameCap.textContent='';
+    view.innerHTML=`<div class="empty"><div class="big">🪙</div>
+      <h3>왼쪽에 문장을 넣어보세요</h3>
+      <p>“엄마 아빠 사랑해요” 처럼 짧은 문장이 가장 재밌어요. 글자 하나하나가 숨길 보물이 됩니다.</p></div>`;
+    return;
+  }
+
+  if(state.tab==='pieces'){
+    frameCap.textContent='';
+    const px=Math.round(state.sizeCm*SCREEN_PX_PER_CM);
+    let n=0;
+    const chips=letters().map(ch=>{ n++;
+      return `<div class="piece" style="width:${px}px;height:${px}px;border-radius:${px*0.11}px">
+        <span class="scissor">✂️</span><span class="num">${n}</span>
+        <span class="char" style="font-family:${ff};font-size:${Math.round(px*0.56)}px">${escapeHtml(ch)}</span></div>`;
+    }).join('');
+    view.className='view';
+    view.innerHTML=`<p class="sheet-label">✂️ 보물 조각 <span style="color:var(--muted);font-weight:400;font-size:12px">— ${n}개 · 각 ${state.sizeCm.toFixed(1)}cm</span></p>
+      <p class="sheet-sub">점선을 따라 잘라 집안에 숨겨요. 좌상단 번호가 상황판 순서예요. (인쇄 시 A4 세로, 자동 여러 장)</p>
+      <div class="pieces">${chips}</div>`;
+  } else {
+    const slotCqw=(state.sizeCm*10*MM_TO_CQW).toFixed(3);
+    const rows=layoutRows(state.sizeCm*10);
+    const rowsHtml=rows.map(row=>{
+      const slots=row.map(cell=>{
+        const g=state.hint?`<span class="ghost" style="font-family:${ff}">${escapeHtml(cell.ch)}</span>`:'';
+        return `<div class="slot"><span class="snum">${cell.num}</span>${g}</div>`;
+      }).join('');
+      return `<div class="brow">${slots}</div>`;
+    }).join('');
+    view.className='view';
+    view.innerHTML=`<p class="sheet-label">🗺️ 상황판 <span style="color:var(--muted);font-weight:400;font-size:12px">— 여기 보이는 그대로 인쇄·PDF로 나와요</span></p>
+      <p class="sheet-sub">${state.hint?'흐린 글자를 보고':'번호 순서대로'} 찾은 조각을 올려 문장을 완성해요. 줄바꿈은 띄어쓰기(단어) 단위로만 일어나요.</p>
+      <div class="a4-frame" style="--sc:${slotCqw}cqw">${rowsHtml}</div>`;
+    const fit=boardFits(state.sizeCm*10);
+    frameCap.innerHTML = fit.fits
+      ? `A4 가로 1장에 딱 맞아요 ✔ (조각 ${state.sizeCm.toFixed(1)}cm · ${rows.length}줄)`
+      : `<span class="overflow-warn">⚠ A4 가로 1장을 넘어요.</span> <button id="fitBtn" class="fitbtn">한 장에 맞추기</button>`;
+  }
+}
+
+function buildPrint(){
+  const ff=FONTS[state.font].css;
+  const mm=state.sizeCm*10;
+  let n=0;
+  const pieces=letters().map(ch=>{ n++;
+    return `<div class="p-piece" style="width:${mm}mm;height:${mm}mm;border-radius:${(mm*0.09).toFixed(1)}mm">
+      <span class="pn">${n}</span>
+      <span class="pc" style="font-family:${ff};font-size:${(mm*0.56).toFixed(1)}mm">${escapeHtml(ch)}</span></div>`;
+  }).join('');
+  const bmm=mm;
+  let m=0;
+  const sn=(bmm*0.2).toFixed(1), sf=(bmm*0.11).toFixed(1);
+  const board=layoutRows(bmm).map(row=>{
+    const slots=row.map(cell=>{
+      const g=state.hint?`<span class="sg" style="font-family:${ff};font-size:${(bmm*0.6).toFixed(1)}mm">${escapeHtml(cell.ch)}</span>`:'';
+      return `<div class="p-slot" style="width:${bmm}mm;height:${bmm}mm;border-radius:${(bmm*0.1).toFixed(1)}mm">
+        <span class="sn" style="width:${sn}mm;height:${sn}mm;font-size:${sf}mm">${cell.num}</span>${g}</div>`;
+    }).join('');
+    return `<div class="p-row">${slots}</div>`;
+  }).join('');
+
+  printArea.innerHTML=`
+    <div class="pieces-sheet">
+      <p class="p-title">✂️ 보물 조각 — 잘라서 숨기세요</p>
+      <p class="p-sub">문장: ${escapeHtml(state.sentence)} · 총 ${n}조각 · 각 ${state.sizeCm.toFixed(1)}cm</p>
+      <div class="p-pieces">${pieces}</div>
+    </div>
+    <div class="board-sheet">
+      <p class="p-title">🗺️ 상황판 — 찾은 조각을 올리세요 (A4 가로)</p>
+      <p class="p-sub">번호 순서대로 채우면 문장이 완성돼요.</p>
+      <div class="p-board">${board}</div>
+    </div>`;
+}
+
+async function ensureFonts(){
+  const f=FONTS[state.font];
+  const txt=(state.sentence||'가나다')+'0123456789 보물조각상황판';
+  try{
+    await document.fonts.load(f.load,txt);
+    await document.fonts.load('700 40px "Noto Sans KR"',txt);
+    await document.fonts.load('400 40px "Jua"',txt);
+    await document.fonts.ready;
+  }catch(e){}
+}
+function roundRect(g,x,y,w,h,r){
+  g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);
+  g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();
+}
+function drawBadge(g,cx,cy,r,txt){
+  g.beginPath();g.arc(cx,cy,r,0,Math.PI*2);g.closePath();
+  g.fillStyle='#173B5E';g.fill();
+  g.fillStyle='#fff';g.font=`700 ${Math.round(r*1.08)}px "Noto Sans KR"`;
+  g.textAlign='center';g.textBaseline='middle';g.fillText(txt,cx,cy+r*0.06);
+}
+/* one treasure card at (x,y) size s */
+function drawCard(g,x,y,s,ch,num){
+  const t=THEMES[state.theme],f=FONTS[state.font];
+  g.fillStyle=t.bg;roundRect(g,x,y,s,s,s*0.11);g.fill();
+  g.save();g.strokeStyle=t.border;g.lineWidth=Math.max(2,s*0.014);
+  g.setLineDash([s*0.05,s*0.035]);roundRect(g,x+s*0.05,y+s*0.05,s-s*0.1,s-s*0.1,s*0.08);g.stroke();g.restore();
+  g.fillStyle=t.ink;g.font=`${f.w}${Math.round(s*0.56)}px ${f.css}`;
+  g.textAlign='center';g.textBaseline='middle';g.fillText(ch,x+s/2,y+s*0.55);
+  drawBadge(g,x+s*0.17,y+s*0.17,s*0.15,String(num));
+}
+/* one board slot at (x,y) size s */
+function drawSlot(g,x,y,s,ch,num,hint){
+  const t=THEMES[state.theme],f=FONTS[state.font];
+  g.fillStyle='#ffffff';roundRect(g,x,y,s,s,s*0.1);g.fill();
+  g.save();g.strokeStyle=t.border;g.lineWidth=Math.max(2,s*0.02);
+  g.setLineDash([s*0.06,s*0.045]);roundRect(g,x+s*0.03,y+s*0.03,s-s*0.06,s-s*0.06,s*0.08);g.stroke();g.restore();
+  if(hint){g.save();g.globalAlpha=.22;g.fillStyle=t.border;
+    g.font=`${f.w}${Math.round(s*0.6)}px ${f.css}`;g.textAlign='center';g.textBaseline='middle';
+    g.fillText(ch,x+s/2,y+s*0.54);g.restore();}
+  drawBadge(g,x+s*0.15,y+s*0.15,s*0.14,String(num));
+}
+
+/* ================= SHARED BOARD LAYOUT ENGINE (mm) =================
+   Every surface (screen preview, PDF, print) renders from layoutRows(),
+   so the wrapping is guaranteed identical everywhere. */
+const BOARD={W:297,H:210,M:10,TOP:12,GAP:7};
+function boardUsableW(){ return BOARD.W-BOARD.M*2; }
+function boardUsableH(){ return BOARD.H-BOARD.M*2-BOARD.TOP; }
+/* returns rows: [[{ch,num},...], ...]  — words never break unless a single word
+   is physically wider than one full row (last resort split). Gaps are uniform. */
+function layoutRows(slotMM){
+  const usableW=boardUsableW(), gap=BOARD.GAP;
+  const maxChars=Math.max(1,Math.floor((usableW+gap)/(slotMM+gap)));
+  const wl=[];
+  for(const w of words()){
+    if(w.length<=maxChars){ wl.push(w); }
+    else for(let i=0;i<w.length;i+=maxChars) wl.push(w.slice(i,i+maxChars));
+  }
+  const rows=[]; let row=[], rowW=0, num=0;
+  for(const word of wl){
+    const wordW=word.length*slotMM+(word.length-1)*gap;
+    const add=(row.length?gap:0)+wordW;
+    if(row.length && rowW+add>usableW+0.5){ rows.push(row); row=[]; rowW=0; }
+    rowW+=(row.length?gap:0)+wordW;
+    for(const ch of word){ num++; row.push({ch,num}); }
+  }
+  if(row.length) rows.push(row);
+  return rows;
+}
+function boardFits(slotMM){
+  const rows=layoutRows(slotMM);
+  const h=rows.length*slotMM+(rows.length-1)*BOARD.GAP;
+  const maxChars=Math.max(1,Math.floor((boardUsableW()+BOARD.GAP)/(slotMM+BOARD.GAP)));
+  const split=words().some(w=>w.length>maxChars);
+  return { fits: h<=boardUsableH(), split, rows };
+}
+/* largest slot (mm) ≤ wanted that fits one page; prefer no word-splitting */
+function maxFitSlotMM(wantedMM){
+  const w=Math.min(wantedMM,100);
+  for(let s=w;s>=12;s-=1){ const r=boardFits(s); if(r.fits&&!r.split) return s; }
+  for(let s=w;s>=12;s-=1){ if(boardFits(s).fits) return s; }
+  return 12;
+}
+
+async function exportJPG(){
+  const ls=letters();
+  if(!ls.length){ alert('먼저 문장을 입력하세요.'); return; }
+  if(ls.length>8 && !confirm(`${ls.length}장의 JPG가 순서대로 저장됩니다.\n(모바일은 여러 파일 저장이 막힐 수 있어요. 여러 장이면 "PDF 저장"을 추천!)\n계속할까요?`)) return;
+  await ensureFonts();
+  const px=Math.round(state.sizeCm/2.54*300);   // 300 dpi
+  for(let i=0;i<ls.length;i++){
+    const c=document.createElement('canvas');c.width=px;c.height=px;
+    const g=c.getContext('2d');
+    drawCard(g,0,0,px,ls[i],i+1);
+    const safe=(ls[i]||'').replace(/[\\\/:*?"<>|\s]/g,'')||'글자';
+    const a=document.createElement('a');a.href=c.toDataURL('image/jpeg',0.95);
+    a.download=`보물조각_${String(i+1).padStart(2,'0')}_${safe}.jpg`;
+    document.body.appendChild(a);a.click();a.remove();
+    await new Promise(r=>setTimeout(r,220));
+  }
+}
+
+/* shrink slot size so the board fits one landscape page; returns true if changed */
+function applyBoardFit(){
+  const cm=Math.min(10,Math.max(2,Math.floor(maxFitSlotMM(state.sizeCm*10)/10*2)/2));
+  if(cm===state.sizeCm) return false;
+  state.sizeCm=cm;
+  const r=$('#sizeRange'); if(r) r.value=cm;
+  const v=$('#sizeVal'); if(v) v.textContent=cm.toFixed(1)+'cm';
+  render();
+  return true;
+}
+function ensureBoardFitsOrAsk(){
+  if(boardFits(state.sizeCm*10).fits) return true;
+  if(confirm('상황판이 A4 가로 1장을 넘어요.\n한 장에 맞게 자동으로 줄일까요?\n(취소하면 보이는 그대로 내보냅니다)')){ applyBoardFit(); }
+  return true;
+}
+
+async function exportPDF(){
+  if(!letters().length){ alert('먼저 문장을 입력하세요.'); return; }
+  const JS=window.jspdf&&window.jspdf.jsPDF;
+  if(!JS){ alert('PDF 모듈을 불러오지 못했어요(인터넷 연결을 확인하세요). 대신 인쇄 창을 엽니다.'); buildPrint(); window.print(); return; }
+  ensureBoardFitsOrAsk();
+  await ensureFonts();
+
+  const DPMM=150/25.4, M=12, cardMM=state.sizeCm*10;
+  const doc=new JS({unit:'mm',format:'a4',orientation:'portrait'});
+  const titleFont=cv=>`700 ${Math.round(4.6*DPMM)}px "Jua","Noto Sans KR"`;
+
+  // ---- 보물 조각 (A4 세로, 자동 여러 장) ----
+  const pw=210,ph=297,gap=8,usableW=pw-M*2,usableH=ph-M*2-9;
+  const cols=Math.max(1,Math.floor((usableW+gap)/(cardMM+gap)));
+  const rows=Math.max(1,Math.floor((usableH+gap)/(cardMM+gap)));
+  const perPage=Math.max(1,cols*rows), ls=letters();
+  let first=true;
+  for(let p=0;p*perPage<ls.length;p++){
+    if(!first) doc.addPage('a4','portrait'); first=false;
+    const cv=document.createElement('canvas');cv.width=Math.round(pw*DPMM);cv.height=Math.round(ph*DPMM);
+    const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);
+    g.fillStyle='#173B5E';g.textAlign='left';g.textBaseline='top';g.font=titleFont();
+    g.fillText('✂ 보물 조각 — 점선을 따라 잘라 숨기세요',M*DPMM,(M-6)*DPMM);
+    ls.slice(p*perPage,(p+1)*perPage).forEach((ch,idx)=>{
+      const col=idx%cols,row=Math.floor(idx/cols);
+      drawCard(g,(M+col*(cardMM+gap))*DPMM,(M+7+row*(cardMM+gap))*DPMM,cardMM*DPMM,ch,p*perPage+idx+1);
+    });
+    doc.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',0,0,pw,ph);
+  }
+
+  // ---- 상황판 (화면에 보이는 그대로: 동일한 layoutRows 사용) ----
+  doc.addPage('a4','landscape');
+  const slotMM=state.sizeCm*10;
+  const cv=document.createElement('canvas');cv.width=Math.round(BOARD.W*DPMM);cv.height=Math.round(BOARD.H*DPMM);
+  const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);
+  g.fillStyle='#173B5E';g.textAlign='left';g.textBaseline='top';g.font=titleFont();
+  g.fillText('🗺 상황판 — 찾은 조각을 번호에 맞춰 올리세요',BOARD.M*DPMM,4*DPMM);
+  const brows=layoutRows(slotMM), bgap=BOARD.GAP;
+  const blockH=brows.length*slotMM+(brows.length-1)*bgap;
+  let cy=BOARD.M+BOARD.TOP+Math.max(0,(boardUsableH()-blockH)/2);   // vertical center like preview
+  brows.forEach(row=>{
+    const rowW=row.length*slotMM+(row.length-1)*bgap;
+    let cx=BOARD.M+Math.max(0,(boardUsableW()-rowW)/2);             // horizontal center like preview
+    row.forEach(cell=>{ drawSlot(g,cx*DPMM,cy*DPMM,slotMM*DPMM,cell.ch,cell.num,state.hint); cx+=slotMM+bgap; });
+    cy+=slotMM+bgap;
+  });
+  doc.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',0,0,BOARD.W,BOARD.H);
+
+  doc.save('보물글자놀이.pdf');
+}
+
+/* events */
+$('#sentence').addEventListener('input',e=>{
+  state.sentence=e.target.value;
+  const n=letters().length, cEl=$('#count');
+  cEl.textContent=`${n}글자`+(n>20?' · 많아요! 문장을 나누는 걸 추천':'');
+  cEl.classList.toggle('warn',n>20); render();
+});
+$('#sizeRange').addEventListener('input',e=>{
+  state.sizeCm=parseFloat(e.target.value);
+  $('#sizeVal').textContent=state.sizeCm.toFixed(1)+'cm'; render();
+});
+$('#fontSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  state.font=b.dataset.font; setPressed('#fontSeg button',b); render();
+});
+$('#themeSeg').addEventListener('click',e=>{
+  const b=e.target.closest('.sw'); if(!b)return;
+  state.theme=b.dataset.theme; setPressed('#themeSeg .sw',b); render();
+});
+const ht=$('#hintToggle');
+function toggleHint(){ state.hint=!state.hint; ht.setAttribute('aria-pressed',state.hint); render(); }
+ht.addEventListener('click',toggleHint);
+ht.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleHint();} });
+$('#tabs').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  state.tab=b.dataset.tab; setPressed('#tabs button',b); render();
+});
+$('#pdfBtn').addEventListener('click',exportPDF);
+$('#printBtn').addEventListener('click',()=>{
+  if(!letters().length){ alert('먼저 문장을 입력하세요.'); return; }
+  ensureBoardFitsOrAsk();
+  buildPrint();
+  Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))]).then(()=>setTimeout(()=>window.print(),120));
+});
+$('#jpgBtn').addEventListener('click',exportJPG);
+frameCap.addEventListener('click',e=>{ if(e.target.id==='fitBtn') applyBoardFit(); });
+function setPressed(sel,active){ document.querySelectorAll(sel).forEach(el=>el.setAttribute('aria-pressed',el===active)); }
+
+render();
+</script>
+</body>
+</html>
