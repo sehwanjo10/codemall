@@ -61,7 +61,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Safe sessionStorage wrapper for in-app browsers (like Instagram)
     // Temporary bypass: Always return true to disable Coupang modal window
     const checkVisitedCoupang = () => {
-        return true;
+        try {
+            return sessionStorage.getItem('coupang_visited') === 'true' || window._coupangVisitedFallback;
+        } catch (e) {
+            return window._coupangVisitedFallback || false;
+        }
     };
 
     const setVisitedCoupang = () => {
@@ -93,11 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to navigate to the original link
     const navigateToTarget = () => {
-        if (currentTargetType === '_blank') {
-            window.open(currentTargetHref, '_blank');
-        } else {
-            window.location.href = currentTargetHref;
-        }
+        window.location.href = currentTargetHref;
     };
 
     // Modal Close Events
@@ -105,18 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
     modalClose.addEventListener('click', closeModal);
     
     // Support Button Event
-    supportBtn.addEventListener('click', () => {
+    supportBtn.addEventListener('click', (e) => {
         if (typeof gtag === 'function') gtag('event', 'click_coupang_support', { 'event_category': 'monetization' });
         setVisitedCoupang();
         
-        try {
-            window.open(COUPANG_URL, '_blank');
-        } catch (e) {
-            window.location.href = COUPANG_URL; // fallback if window.open is blocked
-        }
-        
         closeModal();
-        setTimeout(navigateToTarget, 300);
+        setTimeout(navigateToTarget, 500);
     });
 
     const attachInterceptor = (link) => {

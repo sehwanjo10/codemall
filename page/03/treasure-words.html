@@ -165,9 +165,8 @@ input[type=range]{width:100%;accent-color:var(--coral);height:26px;cursor:pointe
 .prep h2{font-family:"Jua";font-weight:400;color:var(--navy);font-size:16px;margin:0 0 3px;display:flex;gap:7px;align-items:center}
 .prep p.sub{font-size:12.5px;color:var(--muted);margin:0 0 14px}
 .prep-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px}
-.prep-list a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);
-  background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px 13px;transition:.13s;font-size:13.5px}
-.prep-list a:hover{border-color:var(--gold);transform:translateY(-1px)}
+.prep-list .item-card{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);
+  background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:13.5px}
 .prep-list .ic{font-size:19px}
 .prep-list .why{display:block;font-size:11px;color:var(--muted);margin-top:1px}
 .prep-note{font-size:11px;color:var(--muted);margin:13px 0 0;line-height:1.6}
@@ -285,12 +284,11 @@ footer{margin-top:30px;text-align:center;color:var(--muted);font-size:12px}
         <h2>🧺 놀이 준비물</h2>
         <p class="sub">이 놀이는 실물 출력·가공이 필요해요. 아래에서 바로 준비하세요.</p>
         <ul class="prep-list">
-          <li><a href="https://link.coupang.com/a/fv8rAnEcPQ" target="_blank" rel="noopener nofollow sponsored" data-cta="a4"><span class="ic">📄</span><span>A4 용지<span class="why">조각·상황판 출력</span></span></a></li>
-          <li><a href="https://link.coupang.com/a/fv8xdbBTxI" target="_blank" rel="noopener nofollow sponsored" data-cta="laminator"><span class="ic">🛡️</span><span>코팅기<span class="why">조각을 오래 튼튼하게</span></span></a></li>
-          <li><a href="https://link.coupang.com/a/fv8GTmlfaK" target="_blank" rel="noopener nofollow sponsored" data-cta="magnet"><span class="ic">🧲</span><span>잘라 쓰는 자석<span class="why">냉장고·판에 붙이기</span></span></a></li>
-          <li><a href="https://link.coupang.com/a/fv8IzFPgXc" target="_blank" rel="noopener nofollow sponsored" data-cta="scissors"><span class="ic">✂️</span><span>안전가위<span class="why">아이와 함께 오리기</span></span></a></li>
+          <li><div class="item-card"><span class="ic">📄</span><span>A4 용지<span class="why">조각·상황판 출력</span></span></div></li>
+          <li><div class="item-card"><span class="ic">🛡️</span><span>코팅기<span class="why">조각을 오래 튼튼하게</span></span></div></li>
+          <li><div class="item-card"><span class="ic">🧲</span><span>잘라 쓰는 자석<span class="why">냉장고·판에 붙이기</span></span></div></li>
+          <li><div class="item-card"><span class="ic">✂️</span><span>안전가위<span class="why">아이와 함께 오리기</span></span></div></li>
         </ul>
-        <p class="disclosure">이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
       </div>
 
       <footer>보물 글자 놀이 · 인쇄해서 아이와 함께 즐기세요</footer>
