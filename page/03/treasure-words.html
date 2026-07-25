@@ -105,6 +105,10 @@ input[type=range]{width:100%;accent-color:var(--coral);height:26px;cursor:pointe
 
 .sheet-label{font-family:"Jua";color:var(--navy);font-size:15px;margin:0 0 3px;display:flex;align-items:center;gap:7px}
 .sheet-sub{font-size:12px;color:var(--muted);margin:0 0 16px}
+.tipbox{background:#FFF6E0;border:1px dashed var(--gold-deep);border-radius:12px;
+  padding:10px 12px;font-size:12.5px;color:#7A5410;margin:0 0 14px;line-height:1.55}
+.tipbox b{color:#5E3F09}
+.tipmini{font-size:11.5px;color:var(--coral);font-weight:700;margin-top:6px;line-height:1.5}
 
 /* pieces */
 .pieces{display:flex;flex-wrap:wrap;gap:14px}
@@ -126,9 +130,17 @@ input[type=range]{width:100%;accent-color:var(--coral);height:26px;cursor:pointe
   border:2px solid #DCEAE3;border-radius:12px;
   padding:4cqw 3.37cqw;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2.357cqw;overflow:hidden;
+  gap:var(--rg,2.357cqw);overflow:hidden;
 }
-.a4-frame .brow{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:center;align-items:center;gap:2.357cqw}
+.a4-frame .brow{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:center;align-items:flex-start;gap:var(--wg,2.357cqw)}
+/* 낱말 묶음(트레이) */
+.a4-frame .wgroup{display:flex;flex-direction:column;align-items:center}
+.a4-frame .tray{display:flex;flex-direction:row;flex-wrap:nowrap;gap:var(--ig);
+  padding:var(--pad);background:var(--tray-bg,#FBEDCF);
+  border:1px solid var(--tray-line,#E8C88A);
+  border-radius:calc(var(--sc)*.20)}
+.a4-frame .wlab{height:var(--lab);line-height:var(--lab);font-size:calc(var(--lab)*.62);
+  font-family:"Noto Sans KR";font-weight:700;color:var(--muted);letter-spacing:-.3px;white-space:nowrap}
 .a4-frame .slot{
   width:var(--sc);height:var(--sc);
   background:var(--paper);
@@ -187,8 +199,11 @@ footer{margin-top:30px;text-align:center;color:var(--muted);font-size:12px}
   .p-piece .pn{position:absolute;top:2.5mm;left:2.5mm;min-width:6mm;height:6mm;border-radius:50%;
     background:#173B5E;color:#fff;font-size:8.5pt;display:grid;place-items:center;font-weight:700}
   .p-piece .pc{line-height:1;color:#111}
-  .p-board{display:flex;flex-direction:column;gap:7mm;justify-content:center;align-items:center;min-height:170mm}
-  .p-row{display:flex;flex-direction:row;flex-wrap:nowrap;gap:7mm;justify-content:center;align-items:center}
+  .p-board{display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:170mm}
+  .p-row{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:center;align-items:flex-start}
+  .p-wgroup{display:flex;flex-direction:column;align-items:center;break-inside:avoid}
+  .p-tray{display:flex;flex-direction:row;flex-wrap:nowrap;border:0.6pt solid #999;background:#F4F4F4;break-inside:avoid}
+  .p-wlab{font-size:7.5pt;font-weight:700;color:#666;white-space:nowrap}
   .p-slot{border:1.2pt dashed #666;display:grid;place-items:center;position:relative;break-inside:avoid;background:#fff}
   .p-slot .sn{position:absolute;top:-4mm;left:-3mm;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center}
   .p-slot .sg{opacity:.16;line-height:1}
@@ -212,8 +227,9 @@ footer{margin-top:30px;text-align:center;color:var(--muted);font-size:12px}
       <p class="hint-txt">아이에게 읽어줄 문장을 넣으면 글자 조각과 상황판이 자동으로 만들어져요.</p>
 
       <label class="field" for="sentence">문장 입력</label>
-      <textarea id="sentence" placeholder="예) 엄마 아빠 사랑해요"></textarea>
+      <textarea id="sentence" placeholder="예) 엄마 아빠 사랑해요 &#10;(붙여쓴 말은 빵/자동차/그림 처럼 / 로 나눠도 돼요)"></textarea>
       <div class="count" id="count">0글자</div>
+      <div class="tipmini" id="tipMini"></div>
 
       <label class="field">조각 크기</label>
       <div class="sizerow"><span style="font-size:12px;color:var(--muted)">슬라이더로 자유 조절</span><span class="sizeval" id="sizeVal">6.0cm</span></div>
@@ -293,10 +309,10 @@ const FONTS = {
   black: { css:"'Black Han Sans', sans-serif",load:'400 100px "Black Han Sans"', w:'' }
 };
 const THEMES = {
-  gold:  { bg:'#FFF6DF', border:'#D99A1C', ink:'#8A5A12' },
-  sea:   { bg:'#E7F2FB', border:'#3E86C4', ink:'#1E4E7A' },
-  forest:{ bg:'#E9F6EC', border:'#3FA35F', ink:'#1E6636' },
-  berry: { bg:'#FCEAF1', border:'#D96599', ink:'#8E2C5B' }
+  gold:  { bg:'#FFF6DF', border:'#D99A1C', ink:'#8A5A12', tray:'#FBEDCF', trayLine:'#E8C88A' },
+  sea:   { bg:'#E7F2FB', border:'#3E86C4', ink:'#1E4E7A', tray:'#DEEBF7', trayLine:'#A8C9E6' },
+  forest:{ bg:'#E9F6EC', border:'#3FA35F', ink:'#1E6636', tray:'#DFF0E4', trayLine:'#A6D5B5' },
+  berry: { bg:'#FCEAF1', border:'#D96599', ink:'#8E2C5B', tray:'#F9E1EB', trayLine:'#EBAEC8' }
 };
 const MM_TO_CQW = 100/297;   // A4 landscape width = 297mm mapped to 100cqw
 const SCREEN_PX_PER_CM = 13; // pieces preview scale
@@ -310,7 +326,8 @@ function graphemes(str){
   if(window.Intl&&Intl.Segmenter){try{const seg=new Intl.Segmenter('ko',{granularity:'grapheme'});return [...seg.segment(str)].map(s=>s.segment);}catch(e){}}
   return [...str];
 }
-function words(){ return state.sentence.split(/[\s\u3000]+/).filter(w=>w.length>0).map(w=>graphemes(w)); }
+/* 낱말 나누기: 띄어쓰기 + 수동 구분자(/ | ,) 모두 인정 */
+function words(){ return state.sentence.split(/[\s\u3000\/|,]+/).filter(w=>w.length>0).map(w=>graphemes(w)); }
 function letters(){ return words().flat(); }
 function escapeHtml(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 
@@ -318,12 +335,25 @@ function applyTheme(){
   const t=THEMES[state.theme];
   const r=document.documentElement.style;
   r.setProperty('--piece-bg',t.bg); r.setProperty('--piece-border',t.border); r.setProperty('--piece-ink',t.ink);
+  r.setProperty('--tray-bg',t.tray); r.setProperty('--tray-line',t.trayLine);
+}
+
+/* 띄어쓰기가 없으면 낱말 구분 자체가 불가능 → 입력을 고치도록 안내 */
+function needsSplitTip(){ return words().length===1 && letters().length>=4; }
+function splitTipHtml(){
+  if(!needsSplitTip()) return '';
+  const w=words()[0]||[];
+  const ex=w.slice(0,2).join('')+' '+w.slice(2).join('');
+  return `<div class="tipbox">⚠️ <b>지금은 낱말이 1개</b>로 인식돼요. 띄어쓰기가 없으면 아이가 어디까지가 한 낱말인지 알 수 없어요.<br>
+    문장 입력을 <b>“${escapeHtml(ex.trim())}”</b> 처럼 띄어 쓰거나, <b>/</b> 로 나눠주세요. (예: 빵/자동차/그림)</div>`;
 }
 
 function render(){
   applyTheme();
   const ff=FONTS[state.font].css;
   const hasText=letters().length>0;
+  const tm=$('#tipMini');
+  if(tm) tm.textContent = needsSplitTip() ? '⚠️ 띄어쓰기(또는 /)가 없어서 낱말이 1개예요 → 아이가 낱말 구분을 못 해요.' : '';
 
   if(!hasText){
     view.className='view';
@@ -348,19 +378,26 @@ function render(){
       <p class="sheet-sub">점선을 따라 잘라 집안에 숨겨요. 좌상단 번호가 상황판 순서예요. (인쇄 시 A4 세로, 자동 여러 장)</p>
       <div class="pieces">${chips}</div>`;
   } else {
-    const slotCqw=(state.sizeCm*10*MM_TO_CQW).toFixed(3);
-    const rows=layoutRows(state.sizeCm*10);
+    const mm=state.sizeCm*10, G=geo(mm), q=v=>(v*MM_TO_CQW).toFixed(3)+'cqw';
+    const rows=layoutRows(mm);
+    const multi=words().length>1;
     const rowsHtml=rows.map(row=>{
-      const slots=row.map(cell=>{
-        const g=state.hint?`<span class="ghost" style="font-family:${ff}">${escapeHtml(cell.ch)}</span>`:'';
-        return `<div class="slot"><span class="snum">${cell.num}</span>${g}</div>`;
+      const groups=row.words.map(w=>{
+        const slots=w.cells.map(cell=>{
+          const g=state.hint?`<span class="ghost" style="font-family:${ff}">${escapeHtml(cell.ch)}</span>`:'';
+          return `<div class="slot"><span class="snum">${cell.num}</span>${g}</div>`;
+        }).join('');
+        const lab=multi?`낱말 ${w.wi}${w.cont?' (이어서)':''}`:'';
+        return `<div class="wgroup"><div class="tray">${slots}</div><div class="wlab">${lab}</div></div>`;
       }).join('');
-      return `<div class="brow">${slots}</div>`;
+      return `<div class="brow">${groups}</div>`;
     }).join('');
+    const vars=`--sc:${q(mm)};--ig:${q(G.inGap)};--wg:${q(G.wordGap)};--pad:${q(G.pad)};--lab:${q(G.label)};--rg:${q(G.rowGap)}`;
     view.className='view';
     view.innerHTML=`<p class="sheet-label">🗺️ 상황판 <span style="color:var(--muted);font-weight:400;font-size:12px">— 여기 보이는 그대로 인쇄·PDF로 나와요</span></p>
-      <p class="sheet-sub">${state.hint?'흐린 글자를 보고':'번호 순서대로'} 찾은 조각을 올려 문장을 완성해요. 줄바꿈은 띄어쓰기(단어) 단위로만 일어나요.</p>
-      <div class="a4-frame" style="--sc:${slotCqw}cqw">${rowsHtml}</div>`;
+      <p class="sheet-sub">${state.hint?'흐린 글자를 보고':'번호 순서대로'} 찾은 조각을 올려 문장을 완성해요. <b>낱말끼리 받침판에 묶여</b> 있고, 낱말 사이는 글자 사이보다 훨씬 넓어요.</p>
+      ${splitTipHtml()}
+      <div class="a4-frame" style="${vars}">${rowsHtml}</div>`;
     const fit=boardFits(state.sizeCm*10);
     frameCap.innerHTML = fit.fits
       ? `A4 가로 1장에 딱 맞아요 ✔ (조각 ${state.sizeCm.toFixed(1)}cm · ${rows.length}줄)`
@@ -377,16 +414,22 @@ function buildPrint(){
       <span class="pn">${n}</span>
       <span class="pc" style="font-family:${ff};font-size:${(mm*0.56).toFixed(1)}mm">${escapeHtml(ch)}</span></div>`;
   }).join('');
-  const bmm=mm;
-  let m=0;
+  const bmm=mm, G=geo(bmm);
   const sn=(bmm*0.2).toFixed(1), sf=(bmm*0.11).toFixed(1);
+  const multi=words().length>1;
   const board=layoutRows(bmm).map(row=>{
-    const slots=row.map(cell=>{
-      const g=state.hint?`<span class="sg" style="font-family:${ff};font-size:${(bmm*0.6).toFixed(1)}mm">${escapeHtml(cell.ch)}</span>`:'';
-      return `<div class="p-slot" style="width:${bmm}mm;height:${bmm}mm;border-radius:${(bmm*0.1).toFixed(1)}mm">
-        <span class="sn" style="width:${sn}mm;height:${sn}mm;font-size:${sf}mm">${cell.num}</span>${g}</div>`;
+    const groups=row.words.map(w=>{
+      const slots=w.cells.map(cell=>{
+        const g=state.hint?`<span class="sg" style="font-family:${ff};font-size:${(bmm*0.6).toFixed(1)}mm">${escapeHtml(cell.ch)}</span>`:'';
+        return `<div class="p-slot" style="width:${bmm}mm;height:${bmm}mm;border-radius:${(bmm*0.1).toFixed(1)}mm">
+          <span class="sn" style="width:${sn}mm;height:${sn}mm;font-size:${sf}mm">${cell.num}</span>${g}</div>`;
+      }).join('');
+      const lab=multi?`낱말 ${w.wi}${w.cont?' (이어서)':''}`:'&nbsp;';
+      return `<div class="p-wgroup">
+        <div class="p-tray" style="gap:${G.inGap.toFixed(1)}mm;padding:${G.pad.toFixed(1)}mm;border-radius:${(bmm*0.2).toFixed(1)}mm">${slots}</div>
+        <div class="p-wlab" style="height:${G.label.toFixed(1)}mm;line-height:${G.label.toFixed(1)}mm">${lab}</div></div>`;
     }).join('');
-    return `<div class="p-row">${slots}</div>`;
+    return `<div class="p-row" style="gap:${G.wordGap.toFixed(1)}mm">${groups}</div>`;
   }).join('');
 
   printArea.innerHTML=`
@@ -397,8 +440,8 @@ function buildPrint(){
     </div>
     <div class="board-sheet">
       <p class="p-title">🗺️ 상황판 — 찾은 조각을 올리세요 (A4 가로)</p>
-      <p class="p-sub">번호 순서대로 채우면 문장이 완성돼요.</p>
-      <div class="p-board">${board}</div>
+      <p class="p-sub">낱말끼리 받침판에 묶여 있어요. 번호 순서대로 채우면 문장이 완성돼요.</p>
+      <div class="p-board" style="gap:${G.rowGap.toFixed(1)}mm">${board}</div>
     </div>`;
 }
 
@@ -432,6 +475,14 @@ function drawCard(g,x,y,s,ch,num){
   g.textAlign='center';g.textBaseline='middle';g.fillText(ch,x+s/2,y+s*0.55);
   drawBadge(g,x+s*0.17,y+s*0.17,s*0.15,String(num));
 }
+/* 낱말 받침판 (canvas) */
+function drawTray(g,x,y,w,h,r){
+  const t=THEMES[state.theme];
+  g.save();
+  g.fillStyle=t.tray; roundRect(g,x,y,w,h,r); g.fill();
+  g.strokeStyle=t.trayLine; g.lineWidth=Math.max(1.2,h*0.012); g.stroke();
+  g.restore();
+}
 /* one board slot at (x,y) size s */
 function drawSlot(g,x,y,s,ch,num,hint){
   const t=THEMES[state.theme],f=FONTS[state.font];
@@ -450,33 +501,50 @@ function drawSlot(g,x,y,s,ch,num,hint){
 const BOARD={W:297,H:210,M:10,TOP:12,GAP:7};
 function boardUsableW(){ return BOARD.W-BOARD.M*2; }
 function boardUsableH(){ return BOARD.H-BOARD.M*2-BOARD.TOP; }
-/* returns rows: [[{ch,num},...], ...]  — words never break unless a single word
-   is physically wider than one full row (last resort split). Gaps are uniform. */
+
+/* ---- 낱말 단위 간격/여백 (모두 mm) ----
+   글자 사이는 좁게, 낱말 사이는 3~5배 넓게 → 아이가 낱말 경계를 눈으로 구분 */
+function geo(slotMM){
+  return {
+    inGap:   Math.max(2,   slotMM*0.10),   // 같은 낱말 안 글자 간격
+    wordGap: Math.max(12,  slotMM*0.45),   // 낱말 사이 간격 (글자 사이의 4~5배)
+    pad:     Math.max(1.6, slotMM*0.09),   // 낱말 받침판(트레이) 안쪽 여백
+    label:   Math.max(4,   slotMM*0.20),   // 낱말 라벨 줄 높이
+    rowGap:  Math.max(7,   slotMM*0.22)    // 줄 간격
+  };
+}
+function rowHeightMM(slotMM){ const G=geo(slotMM); return slotMM+G.pad*2+G.label; }
+function wordWidthMM(n,slotMM){ const G=geo(slotMM); return n*slotMM+(n-1)*G.inGap+G.pad*2; }
+/* returns rows: [{words:[{cells:[{ch,num}], wi, cont, w}], w}]
+   한 낱말은 절대 쪼개지지 않음(한 줄보다 넓을 때만 마지막 수단으로 분할).
+   낱말 사이 간격 > 글자 사이 간격 이므로 낱말 경계가 눈에 보인다. */
 function layoutRows(slotMM){
-  const usableW=boardUsableW(), gap=BOARD.GAP;
-  const maxChars=Math.max(1,Math.floor((usableW+gap)/(slotMM+gap)));
-  const wl=[];
+  const G=geo(slotMM), usableW=boardUsableW();
+  const maxChars=Math.max(1,Math.floor((usableW-G.pad*2+G.inGap)/(slotMM+G.inGap)));
+  const wl=[]; let wi=0;
   for(const w of words()){
-    if(w.length<=maxChars){ wl.push(w); }
-    else for(let i=0;i<w.length;i+=maxChars) wl.push(w.slice(i,i+maxChars));
+    wi++;
+    if(w.length<=maxChars){ wl.push({chars:w,wi,cont:false}); }
+    else for(let i=0;i<w.length;i+=maxChars) wl.push({chars:w.slice(i,i+maxChars),wi,cont:i>0});
   }
   const rows=[]; let row=[], rowW=0, num=0;
-  for(const word of wl){
-    const wordW=word.length*slotMM+(word.length-1)*gap;
-    const add=(row.length?gap:0)+wordW;
-    if(row.length && rowW+add>usableW+0.5){ rows.push(row); row=[]; rowW=0; }
-    rowW+=(row.length?gap:0)+wordW;
-    for(const ch of word){ num++; row.push({ch,num}); }
+  for(const w of wl){
+    const ww=wordWidthMM(w.chars.length,slotMM);
+    const add=(row.length?G.wordGap:0)+ww;
+    if(row.length && rowW+add>usableW+0.5){ rows.push({words:row,w:rowW}); row=[]; rowW=0; }
+    rowW+=(row.length?G.wordGap:0)+ww;
+    row.push({cells:w.chars.map(ch=>({ch,num:++num})),wi:w.wi,cont:w.cont,w:ww});
   }
-  if(row.length) rows.push(row);
+  if(row.length) rows.push({words:row,w:rowW});
   return rows;
 }
 function boardFits(slotMM){
-  const rows=layoutRows(slotMM);
-  const h=rows.length*slotMM+(rows.length-1)*BOARD.GAP;
-  const maxChars=Math.max(1,Math.floor((boardUsableW()+BOARD.GAP)/(slotMM+BOARD.GAP)));
+  const G=geo(slotMM), rows=layoutRows(slotMM);
+  const h=rows.length*rowHeightMM(slotMM)+(rows.length-1)*G.rowGap;
+  const maxChars=Math.max(1,Math.floor((boardUsableW()-G.pad*2+G.inGap)/(slotMM+G.inGap)));
   const split=words().some(w=>w.length>maxChars);
-  return { fits: h<=boardUsableH(), split, rows };
+  const tooWide=rows.some(r=>r.w>boardUsableW()+0.5);
+  return { fits: h<=boardUsableH() && !tooWide, split, rows };
 }
 /* largest slot (mm) ≤ wanted that fits one page; prefer no word-splitting */
 function maxFitSlotMM(wantedMM){
@@ -556,15 +624,31 @@ async function exportPDF(){
   const cv=document.createElement('canvas');cv.width=Math.round(BOARD.W*DPMM);cv.height=Math.round(BOARD.H*DPMM);
   const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);
   g.fillStyle='#173B5E';g.textAlign='left';g.textBaseline='top';g.font=titleFont();
-  g.fillText('🗺 상황판 — 찾은 조각을 번호에 맞춰 올리세요',BOARD.M*DPMM,4*DPMM);
-  const brows=layoutRows(slotMM), bgap=BOARD.GAP;
-  const blockH=brows.length*slotMM+(brows.length-1)*bgap;
+  g.fillText('🗺 상황판 — 낱말끼리 묶인 자리에 찾은 조각을 올리세요',BOARD.M*DPMM,4*DPMM);
+  const G=geo(slotMM), brows=layoutRows(slotMM);
+  const rowH=rowHeightMM(slotMM);
+  const blockH=brows.length*rowH+(brows.length-1)*G.rowGap;
+  const multi=words().length>1;
   let cy=BOARD.M+BOARD.TOP+Math.max(0,(boardUsableH()-blockH)/2);   // vertical center like preview
   brows.forEach(row=>{
-    const rowW=row.length*slotMM+(row.length-1)*bgap;
-    let cx=BOARD.M+Math.max(0,(boardUsableW()-rowW)/2);             // horizontal center like preview
-    row.forEach(cell=>{ drawSlot(g,cx*DPMM,cy*DPMM,slotMM*DPMM,cell.ch,cell.num,state.hint); cx+=slotMM+bgap; });
-    cy+=slotMM+bgap;
+    let cx=BOARD.M+Math.max(0,(boardUsableW()-row.w)/2);             // horizontal center like preview
+    row.words.forEach(w=>{
+      const ww=w.w, trayH=slotMM+G.pad*2;
+      drawTray(g,cx*DPMM,cy*DPMM,ww*DPMM,trayH*DPMM,(slotMM*0.2)*DPMM);
+      let sx=cx+G.pad;
+      w.cells.forEach(cell=>{
+        drawSlot(g,sx*DPMM,(cy+G.pad)*DPMM,slotMM*DPMM,cell.ch,cell.num,state.hint);
+        sx+=slotMM+G.inGap;
+      });
+      if(multi){
+        g.save();g.fillStyle='#8A94A3';g.textAlign='center';g.textBaseline='middle';
+        g.font=`700 ${Math.round(G.label*0.62*DPMM)}px "Noto Sans KR"`;
+        g.fillText(`낱말 ${w.wi}${w.cont?' (이어서)':''}`,(cx+ww/2)*DPMM,(cy+trayH+G.label*0.55)*DPMM);
+        g.restore();
+      }
+      cx+=ww+G.wordGap;
+    });
+    cy+=rowH+G.rowGap;
   });
   doc.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',0,0,BOARD.W,BOARD.H);
 
