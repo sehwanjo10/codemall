@@ -169,6 +169,62 @@ body {
   flex-wrap: wrap;
 }
 
+/* ---------- 지난번 식단 배너 ---------- */
+
+.saved-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--orange-soft);
+  border: 1.5px solid #F5C89C;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+}
+.saved-text { display: flex; flex-direction: column; gap: 2px; }
+.saved-text strong { font-size: .95rem; }
+.saved-text span { font-size: .82rem; color: var(--muted); }
+.saved-actions { display: flex; gap: 8px; }
+.saved-actions .btn { flex: 1; }
+
+/* ---------- 인원 스테퍼 ---------- */
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 7px 12px;
+  background: var(--paper);
+}
+
+.stepper-label { font-size: .85rem; color: var(--muted); font-weight: 500; }
+.stepper-unit  { font-size: .82rem; color: var(--muted); }
+
+.stepper-btn {
+  font-family: inherit;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.stepper-btn:active { transform: scale(.92); }
+
+.stepper-value {
+  min-width: 18px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 .select-box {
   display: inline-flex;
   align-items: center;
@@ -353,14 +409,53 @@ body {
 .day-date { font-size: .9rem; color: var(--muted); }
 .day-date b { color: var(--ink); }
 
+.day-badge {
+  margin-left: auto;
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--orange);
+  background: var(--orange-soft);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
 .meal + .meal { margin-top: 11px; }
 
 .meal-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   font-size: .82rem;
   font-weight: 700;
   color: var(--orange);
   margin-bottom: 4px;
 }
+
+.meal-total {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.meal-reroll {
+  font-family: inherit;
+  margin-left: auto;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 8px;
+  padding: 1px 7px;
+  font-size: .78rem;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.meal-reroll:hover { border-color: var(--green); background: var(--green-soft); }
+.meal-reroll:active { transform: scale(.9); }
+
+@keyframes mealFlash {
+  from { background: var(--green-soft); }
+  to   { background: transparent; }
+}
+.meal-flash { animation: mealFlash .6s ease-out; border-radius: 8px; }
 
 .dish-list {
   list-style: none;
@@ -376,9 +471,22 @@ body {
   padding: 3px 0;
 }
 
+.dish[data-dish] { cursor: pointer; border-radius: 6px; }
+.dish[data-dish]:hover .dish-name { color: var(--green-deep); text-decoration: underline; }
+.dish[data-dish]:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
 .dish-emoji { font-size: 1rem; }
 .dish-name  { font-size: .95rem; font-weight: 500; }
 .dish-rice .dish-name { color: var(--muted); font-weight: 400; }
+
+.dish-time {
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--cream);
+  border-radius: 5px;
+  padding: 1px 5px;
+}
 
 .nu-tag {
   font-size: .69rem;
@@ -455,11 +563,12 @@ body {
   color: var(--muted);
 }
 
-.buy-count {
-  font-size: .72rem;
+.buy-qty {
+  font-size: .76rem;
   font-weight: 700;
   color: var(--orange);
 }
+.buy-qty-soft { color: var(--muted); font-weight: 500; }
 
 .buy-cut {
   font-size: .72rem;
@@ -467,6 +576,96 @@ body {
   border-left: 1px solid var(--line);
   padding-left: 6px;
 }
+
+/* ---------- 조리법 창 ---------- */
+
+.recipe-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 35, 40, .55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+  padding: 0;
+}
+
+.recipe-modal {
+  position: relative;
+  background: var(--paper);
+  border-radius: 20px 20px 0 0;
+  padding: 26px 20px 30px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 86vh;
+  overflow-y: auto;
+  box-shadow: 0 -6px 30px rgba(0, 0, 0, .2);
+  animation: sheetUp .22s ease-out;
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(24px); opacity: .6; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.recipe-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--muted);
+  font-size: .95rem;
+  cursor: pointer;
+}
+
+.recipe-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.recipe-emoji { font-size: 2.2rem; line-height: 1; }
+.recipe-head h3 { margin: 0; font-size: 1.2rem; font-weight: 800; }
+.recipe-meta { margin: 3px 0 0; font-size: .82rem; color: var(--muted); }
+
+.recipe-allergen {
+  margin: 0 0 14px;
+  font-size: .82rem;
+  color: #B4463A;
+  background: #FDECEA;
+  border-radius: 9px;
+  padding: 8px 11px;
+}
+
+#recipeBody h4 {
+  margin: 18px 0 8px;
+  font-size: .92rem;
+  font-weight: 700;
+  color: var(--green-deep);
+}
+
+.recipe-ing {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.recipe-ing li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 2px;
+  border-bottom: 1px solid var(--line);
+  font-size: .9rem;
+}
+.recipe-ing b { color: var(--green-deep); font-weight: 700; white-space: nowrap; }
+
+.recipe-steps { margin: 0; padding-left: 20px; }
+.recipe-steps li {
+  padding: 5px 0 5px 2px;
+  font-size: .93rem;
+  line-height: 1.6;
+}
+.recipe-steps li::marker { color: var(--green); font-weight: 700; }
 
 /* ---------- 면책 ---------- */
 
@@ -524,7 +723,8 @@ body {
   .result-actions,
   .print-hint,
   .warning,
-  .shopping-desc {
+  .recipe-overlay,
+  .meal-reroll {
     display: none !important;
   }
 
@@ -647,8 +847,20 @@ body {
     font-size: 10pt;
     line-height: 1;
   }
-  .buy-count { color: #000; font-size: 8pt; }
+  .buy-qty { color: #000; font-size: 8.5pt; font-weight: 700; }
+  .buy-qty-soft { color: #666; font-weight: 400; }
   .buy-cut { color: #555; font-size: 7.5pt; }
+  .shopping-desc { color: #444; font-size: 8pt; margin-bottom: 6px; }
+
+  .dish-time { background: none !important; color: #666; font-size: 7pt; padding: 0; }
+  .meal-total { color: #666; font-size: 7.5pt; }
+  .day-badge {
+    background: none !important;
+    color: #000;
+    border: 1px solid #999;
+    font-size: 7pt;
+    padding: 0 4px;
+  }
 
   /* 면책 문구는 마지막에 작게 */
   .disclaimer {
