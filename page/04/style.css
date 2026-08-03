@@ -1,0 +1,675 @@
+/* ============================================================
+   우리 아이 식단표 — 스타일
+   모바일 우선. 엄마들이 주방에서 한 손으로 보는 화면을 기준으로 함.
+   ============================================================ */
+
+:root {
+  --green:      #2F9E68;
+  --green-deep: #1F7A4E;
+  --green-soft: #E8F5EE;
+  --orange:     #F0883C;
+  --orange-soft:#FEF1E5;
+  --ink:        #2A2F36;
+  --muted:      #7A838F;
+  --line:       #E8E4DC;
+  --cream:      #FBF8F3;
+  --paper:      #FFFFFF;
+  --shadow:     0 4px 18px rgba(42, 47, 54, .07);
+  --radius:     16px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+               'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(900px 420px at 100% -5%, #EAF6EF 0%, transparent 60%),
+    radial-gradient(700px 400px at -10% 8%, #FDF0E2 0%, transparent 55%),
+    var(--cream);
+  min-height: 100vh;
+  line-height: 1.55;
+  word-break: keep-all;
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 18px 60px;
+}
+
+.hidden { display: none !important; }
+
+/* ---------- 헤더 ---------- */
+
+.hero {
+  text-align: center;
+  padding: 22px 0 30px;
+}
+
+.back-link {
+  display: inline-block;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .88rem;
+  font-weight: 500;
+  margin-bottom: 18px;
+}
+.back-link:hover { color: var(--green-deep); }
+
+.hero-emoji { font-size: 3rem; line-height: 1; }
+
+.hero h1 {
+  margin: 10px 0 8px;
+  font-size: 1.72rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+
+.hero-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: .95rem;
+}
+
+/* ---------- 패널 · 입력 ---------- */
+
+.panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 24px 20px;
+}
+
+.field { margin-bottom: 26px; }
+.field:last-of-type { margin-bottom: 22px; }
+
+.field-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 5px;
+  font-size: 1.04rem;
+  font-weight: 700;
+}
+
+.field-title .num {
+  flex: none;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.field-desc {
+  margin: 0 0 12px 32px;
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: 32px;
+}
+.chips-col { flex-direction: column; align-items: stretch; }
+
+.chip {
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, transform .1s;
+}
+.chip:active { transform: scale(.97); }
+.chip:hover { border-color: #CFC9BE; }
+
+.chip.on {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+
+.chip-label { font-size: .93rem; font-weight: 600; }
+.chip-desc  { font-size: .76rem; color: var(--muted); }
+.chip.on .chip-desc { color: var(--green-deep); }
+
+.chips-sm .chip { padding: 8px 12px; }
+.chips-sm .chip-label { font-size: .85rem; font-weight: 500; }
+.chips-sm .chip.on {
+  border-color: #E0574A;
+  background: #FDECEA;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 32px;
+  flex-wrap: wrap;
+}
+
+.select-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: var(--paper);
+}
+.select-box > span { font-size: .85rem; color: var(--muted); }
+.select-box select {
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--ink);
+  border: 0;
+  background: transparent;
+  outline: none;
+  padding: 2px 4px;
+}
+
+.season-badge {
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--orange);
+  background: var(--orange-soft);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+
+.text-input {
+  font-family: inherit;
+  font-size: .95rem;
+  width: calc(100% - 32px);
+  margin-left: 32px;
+  padding: 11px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  outline: none;
+  color: var(--ink);
+  background: var(--paper);
+}
+.text-input:focus { border-color: var(--green); }
+
+/* ---------- 버튼 ---------- */
+
+.cta {
+  font-family: inherit;
+  display: block;
+  width: 100%;
+  padding: 16px;
+  font-size: 1.06rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--green) 0%, var(--green-deep) 100%);
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(47, 158, 104, .28);
+  transition: transform .1s, box-shadow .15s;
+}
+.cta:active { transform: translateY(1px); box-shadow: 0 3px 10px rgba(47, 158, 104, .25); }
+
+.cta-note {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: .82rem;
+  color: var(--muted);
+}
+
+.btn {
+  font-family: inherit;
+  padding: 10px 16px;
+  font-size: .89rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
+  cursor: pointer;
+}
+.btn:active { transform: scale(.97); }
+.btn-primary {
+  color: #fff;
+  background: var(--green);
+  border-color: var(--green);
+}
+
+/* ---------- 결과 헤더 ---------- */
+
+.result-head {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.result-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.rtag {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--green-deep);
+  background: var(--green-soft);
+  border-radius: 999px;
+  padding: 5px 11px;
+}
+
+.result-actions { display: flex; flex-direction: column; gap: 8px; }
+.action-row { display: flex; gap: 8px; }
+.action-row .btn { flex: 1; }
+
+.btn-print {
+  color: var(--green-deep);
+  border-color: #BFE0CE;
+  background: #F4FBF7;
+}
+
+.print-hint {
+  margin: 2px 0 0;
+  font-size: .76rem;
+  color: var(--muted);
+  text-align: center;
+}
+.print-hint strong { color: var(--green-deep); font-weight: 600; }
+
+.warning {
+  background: #FFF8E6;
+  border: 1px solid #F0D28A;
+  border-radius: 12px;
+  padding: 13px 15px;
+  font-size: .87rem;
+  color: #7A5A10;
+  margin-bottom: 18px;
+}
+
+/* ---------- 식단표 ---------- */
+
+.week { margin-bottom: 34px; }
+
+.week-title {
+  margin: 0 0 14px;
+  font-size: 1.16rem;
+  font-weight: 800;
+  color: var(--green-deep);
+}
+
+.day-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.day-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  padding: 14px 16px;
+}
+.day-card.weekend { background: #FDFBF7; border-color: #EFE7D8; }
+
+.day-head {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.day-index {
+  font-size: .76rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--green);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+
+.day-date { font-size: .9rem; color: var(--muted); }
+.day-date b { color: var(--ink); }
+
+.meal + .meal { margin-top: 11px; }
+
+.meal-label {
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--orange);
+  margin-bottom: 4px;
+}
+
+.dish-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dish {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 3px 0;
+}
+
+.dish-emoji { font-size: 1rem; }
+.dish-name  { font-size: .95rem; font-weight: 500; }
+.dish-rice .dish-name { color: var(--muted); font-weight: 400; }
+
+.nu-tag {
+  font-size: .69rem;
+  font-weight: 700;
+  color: var(--green-deep);
+  background: var(--green-soft);
+  border-radius: 5px;
+  padding: 2px 6px;
+}
+
+/* ---------- 장보기 목록 ---------- */
+
+.shopping {
+  margin-top: 16px;
+  border: 1.5px solid var(--green);
+  border-radius: var(--radius);
+  background: var(--green-soft);
+  padding: 18px 16px;
+}
+
+.shopping h3 {
+  margin: 0 0 4px;
+  font-size: 1.06rem;
+  font-weight: 800;
+  color: var(--green-deep);
+}
+
+.shopping-desc {
+  margin: 0 0 14px;
+  font-size: .82rem;
+  color: #4E7A63;
+}
+
+.buy-group + .buy-group { margin-top: 14px; }
+
+.buy-group h4 {
+  margin: 0 0 7px;
+  font-size: .86rem;
+  font-weight: 700;
+  color: var(--green-deep);
+}
+
+.buy-group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.buy-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--paper);
+  border-radius: 999px;
+  padding: 6px 12px 6px 9px;
+  font-size: .87rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.buy-item input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--green);
+  margin: 0;
+  cursor: pointer;
+}
+
+.buy-item input:checked ~ .buy-name {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.buy-count {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--orange);
+}
+
+.buy-cut {
+  font-size: .72rem;
+  color: var(--muted);
+  border-left: 1px solid var(--line);
+  padding-left: 6px;
+}
+
+/* ---------- 면책 ---------- */
+
+.disclaimer {
+  margin-top: 28px;
+  padding: 18px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #F6F4F0;
+  font-size: .8rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.disclaimer p { margin: 0 0 8px; }
+.disclaimer p:last-child { margin-bottom: 0; }
+.disclaimer strong { color: #B4463A; }
+.disclaimer .copy { margin-top: 14px; text-align: center; color: #A9B0B9; }
+
+/* ---------- 태블릿 이상 ---------- */
+
+@media (min-width: 620px) {
+  .day-grid { grid-template-columns: 1fr 1fr; }
+  .result-head { flex-direction: row; align-items: flex-start; justify-content: space-between; }
+  .result-actions { flex: none; min-width: 300px; }
+  .hero h1 { font-size: 2rem; }
+  .panel { padding: 30px 28px; }
+}
+
+/* ============================================================
+   인쇄 · PDF 저장
+   ------------------------------------------------------------
+   장바구니에 담으면서 체크할 수 있도록, 배경색에 기대지 않고
+   테두리와 굵기만으로 구조가 보이게 만든다.
+   ============================================================ */
+
+.print-head { display: none; }
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #000;
+    font-size: 10pt;
+  }
+
+  .wrap { max-width: none; padding: 0; }
+
+  /* 화면 전용 요소는 종이에서 뺀다 */
+  .hero,
+  #setup,
+  .result-actions,
+  .print-hint,
+  .warning,
+  .shopping-desc {
+    display: none !important;
+  }
+
+  .panel {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  /* 머리글 */
+  .print-head {
+    display: block;
+    border-bottom: 2px solid #000;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+  .print-head h1 { margin: 0; font-size: 15pt; font-weight: 800; }
+  .print-range { margin: 3px 0 0; font-size: 9.5pt; font-weight: 600; }
+  .print-cond  { margin: 2px 0 0; font-size: 8.5pt; color: #444; }
+
+  .result-head {
+    display: block;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .result-tags { display: none; } /* 조건은 머리글에 이미 있다 */
+
+  /* 주차마다 새 장으로 */
+  .week { margin: 0 0 10px; }
+  .week + .week { break-before: page; }
+  .week-title {
+    font-size: 12pt;
+    margin: 0 0 6px;
+    color: #000;
+  }
+
+  .day-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  /* 카드가 페이지 경계에서 잘리지 않게 */
+  .day-card,
+  .buy-group,
+  .meal {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .day-card {
+    border: 1px solid #999;
+    border-radius: 4px;
+    padding: 6px 8px;
+    background: #fff !important;
+  }
+  .day-card.weekend { background: #fff !important; }
+
+  .day-head { padding-bottom: 4px; margin-bottom: 4px; border-bottom: 1px solid #CCC; }
+  .day-index {
+    background: #000 !important;
+    color: #fff !important;
+    font-size: 7.5pt;
+    padding: 1px 6px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .day-date { font-size: 8.5pt; color: #333; }
+
+  .meal + .meal { margin-top: 5px; }
+  .meal-label { color: #000; font-size: 8pt; margin-bottom: 1px; }
+  .dish { padding: 1px 0; gap: 4px; }
+  .dish-name { font-size: 9pt; }
+  .nu-tag {
+    background: none !important;
+    color: #555;
+    border: 1px solid #BBB;
+    font-size: 6.5pt;
+    padding: 0 3px;
+  }
+
+  /* 장보기 목록 — 종이에서 가장 중요한 부분 */
+  .shopping {
+    background: #fff !important;
+    border: 1.5px solid #000;
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin-top: 8px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .shopping h3 { color: #000; font-size: 12pt; margin-bottom: 6px; }
+  .buy-group h4 { color: #000; font-size: 9pt; }
+  .buy-group + .buy-group { margin-top: 8px; }
+
+  .buy-item {
+    background: none !important;
+    border: 0;
+    padding: 1px 8px 1px 0;
+    font-size: 9pt;
+  }
+
+  /* 네이티브 체크박스는 인쇄가 들쭉날쭉해서 직접 그린다 */
+  .buy-item input {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #000;
+    border-radius: 2px;
+    position: relative;
+    flex: none;
+  }
+  .buy-item input:checked::after {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: -4px;
+    font-size: 10pt;
+    line-height: 1;
+  }
+  .buy-count { color: #000; font-size: 8pt; }
+  .buy-cut { color: #555; font-size: 7.5pt; }
+
+  /* 면책 문구는 마지막에 작게 */
+  .disclaimer {
+    border: 0;
+    border-top: 1px solid #999;
+    border-radius: 0;
+    background: none;
+    padding: 6px 0 0;
+    margin-top: 10px;
+    font-size: 7pt;
+    break-inside: avoid;
+  }
+  .disclaimer strong { color: #000; }
+  .disclaimer .copy { display: none; }
+
+  /* 장보기 목록만 인쇄하는 모드 */
+  body.print-shopping-only .day-grid,
+  body.print-shopping-only .week-title,
+  body.print-shopping-only .print-cond {
+    display: none !important;
+  }
+  body.print-shopping-only .week + .week { break-before: auto; }
+  body.print-shopping-only .shopping { margin-top: 0; }
+}

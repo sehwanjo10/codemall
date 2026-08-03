@@ -78,16 +78,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 3. Shared Link Target Routing Logic
+    const TARGET_PAGES = {
+        worldcup: './page/01/index.html',
+        frog:     './page/02/index.html',
+        treasure: './page/03/treasure-words.html',
+        meal:     './page/04/index.html',
+    };
+
     const urlParams = new URLSearchParams(window.location.search);
     const target = urlParams.get('target');
-    
-    if (target === 'frog' || target === 'worldcup' || target === 'treasure') {
+
+    if (TARGET_PAGES[target]) {
         const hasVisitedCoupang = checkVisitedCoupang();
-        currentTargetHref = target === 'frog' ? './page/02/index.html' : 
-                            target === 'worldcup' ? './page/01/index.html' : 
-                            './page/03/treasure-words.html';
+        currentTargetHref = TARGET_PAGES[target];
         currentTargetType = '_self';
-        
+
         if (!hasVisitedCoupang) {
             modal.classList.remove('hidden');
         } else {
