@@ -489,7 +489,7 @@ function renderDayCard(day, index) {
     </article>`;
 }
 
-function renderShoppingList(grouped) {
+function renderShoppingList(grouped, weekIndex) {
   const sections = Object.keys(ING_CATEGORIES)
     .filter(cat => grouped[cat] && grouped[cat].length)
     .map(cat => {
@@ -513,7 +513,10 @@ function renderShoppingList(grouped) {
   const who = `아이 ${state.kids}명` + (state.adults ? ` · 어른 ${state.adults}명` : '');
 
   return `<section class="shopping">
-      <h3>🛒 이만큼만 사시면 됩니다</h3>
+      <div class="shopping-head">
+        <h3>🛒 이만큼만 사시면 됩니다</h3>
+        <button class="buy-copy" type="button" data-week="${weekIndex}">📋 복사</button>
+      </div>
       <p class="shopping-desc">${who} 기준으로 넉넉하게 올림한 <strong>어림수</strong>예요. 집 식성에 맞춰 조절하시고, 장바구니에 담으면서 체크해 보세요.</p>
       ${sections}
     </section>`;
@@ -532,7 +535,7 @@ function renderPlan() {
         <div class="day-grid">
           ${chunk.map((day, i) => renderDayCard(day, weekIndex * 7 + i)).join('')}
         </div>
-        ${renderShoppingList(buildShoppingList(chunk))}
+        ${renderShoppingList(buildShoppingList(chunk), weekIndex)}
       </section>`;
   }).join('');
 
@@ -558,7 +561,7 @@ function refreshMeal(dayIndex, mealCode) {
   const shopping = $$('.shopping')[weekIndex];
   if (shopping) {
     const wrap2 = document.createElement('div');
-    wrap2.innerHTML = renderShoppingList(buildShoppingList(chunk));
+    wrap2.innerHTML = renderShoppingList(buildShoppingList(chunk), weekIndex);
     shopping.replaceWith(wrap2.firstElementChild);
   }
 }
@@ -651,26 +654,197 @@ function closeRecipe() {
   document.body.style.overflow = '';
 }
 
+/* ---------- 실행 환경 ---------- */
+
+/*
+ * 인스타그램·페이스북·카카오톡처럼 앱 안에 내장된 브라우저인지 확인한다.
+ * 이 환경에서는 window.print()를 불러도 아무 일도 일어나지 않는다.
+ * iOS의 WKWebView와 안드로이드 WebView 모두 인쇄를 구현하지 않는데,
+ * 오류도 안 나고 조용히 무시되기 때문에 미리 걸러내고 다른 길을 안내해야 한다.
+ */
+function isInAppBrowser() {
+  const ua = navigator.userAgent || '';
+  return /Instagram|FBAN|FBAV|FB_IAB|KAKAOTALK|NAVER\(inapp|Line\/|DaumApps|everytimeApp/i.test(ua);
+}
+
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent || '');
+}
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent || '');
+}
+
+/*
+ * 눈에 안 보이는 입력칸에 글을 넣고 복사하는 예전 방식.
+ * 인앱 브라우저에서는 navigator.clipboard가 아예 없거나 막혀 있어 이 길이 필요하다.
+ */
+function copyTextSync(text) {
+  const area = document.createElement('textarea');
+  area.value = text;
+  area.setAttribute('readonly', '');
+  area.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;';
+  document.body.appendChild(area);
+
+  try {
+    if (isIOS()) {
+      /* iOS는 select()만으로 선택이 잡히지 않아 범위를 직접 만들어 준다 */
+      area.contentEditable = 'true';
+      area.readOnly = false;
+      const range = document.createRange();
+      range.selectNodeContents(area);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      area.setSelectionRange(0, 999999);
+    } else {
+      area.select();
+      area.setSelectionRange(0, area.value.length);
+    }
+    return document.execCommand('copy');
+  } catch (e) {
+    return false;
+  } finally {
+    document.body.removeChild(area);
+  }
+}
+
+/*
+ * 예전 방식을 먼저 시도한다.
+ * navigator.clipboard를 먼저 await 하면 그 사이에 '사용자가 방금 눌렀다'는
+ * 자격이 풀려버려서, 실패했을 때 대비책마저 못 쓰게 된다.
+ */
+async function copyText(text) {
+  if (copyTextSync(text)) return true;
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (e) { /* 두 방법 다 실패 */ }
+
+  return false;
+}
+
+let toastTimer = null;
+function toast(message) {
+  const el = $('#toast');
+  el.textContent = message;
+  el.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), 2400);
+}
+
+/* ---------- 장보기 목록 텍스트로 내보내기 ---------- */
+
+/* 인쇄가 막힌 환경에서도 쓸 수 있게, 목록을 그대로 붙여넣을 수 있는 글로 만든다 */
+function shoppingListText(weekIndex) {
+  const chunk = currentPlan.slice(weekIndex * 7, weekIndex * 7 + 7);
+  const grouped = buildShoppingList(chunk);
+  const fmt = d => `${d.getMonth() + 1}/${d.getDate()}`;
+
+  const lines = [
+    `🛒 장보기 목록 (${fmt(chunk[0].date)}~${fmt(chunk[chunk.length - 1].date)})`,
+    `아이 ${state.kids}명${state.adults ? ` · 어른 ${state.adults}명` : ''} 기준`,
+    '',
+  ];
+
+  Object.keys(ING_CATEGORIES).forEach(cat => {
+    const list = grouped[cat];
+    if (!list || !list.length) return;
+    lines.push(`[${ING_CATEGORIES[cat].label}]`);
+    list.forEach(item => {
+      const qty = item.qty ? ` ${item.qty}` : '';
+      const cuts = item.cuts.length ? ` (${item.cuts.join(', ')})` : '';
+      lines.push(`· ${item.name}${qty}${cuts}`);
+    });
+    lines.push('');
+  });
+
+  lines.push('codemall.kr · 우리 아이 식단표');
+  return lines.join('\n');
+}
+
+async function copyShoppingList(weekIndex) {
+  const text = shoppingListText(weekIndex);
+
+  if (await copyText(text)) {
+    closeNotice();
+    toast('장보기 목록을 복사했어요. 메모장이나 카톡에 붙여넣으세요.');
+    if (typeof gtag === 'function') {
+      gtag('event', 'copy_shopping_list', { event_category: 'webapp' });
+    }
+    return;
+  }
+
+  /* 복사가 막힌 브라우저에서도 빈손으로 돌려보내지 않는다 */
+  openTextFallback(text);
+}
+
+/* 자동 복사가 안 되면 글을 직접 띄워서 손으로 복사할 수 있게 한다 */
+function openTextFallback(text) {
+  $('#noticeBody').innerHTML = `
+    <h3>목록을 직접 복사해 주세요</h3>
+    <p class="notice-lead">이 브라우저는 복사 버튼을 막아 두었어요.
+      아래 상자를 눌러 전체 선택한 뒤 길게 눌러 복사하시면 됩니다.</p>
+    <textarea class="copy-area" id="copyArea" readonly rows="9"></textarea>
+    <p class="notice-foot">상자를 한 번 누르면 전체가 선택됩니다.</p>`;
+
+  const area = $('#copyArea');
+  area.value = text;
+  area.addEventListener('click', () => {
+    area.select();
+    area.setSelectionRange(0, 999999);
+  });
+
+  $('#noticeModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+
+  if (typeof gtag === 'function') {
+    gtag('event', 'copy_fallback_shown', { event_category: 'webapp' });
+  }
+}
+
 /* ---------- 인쇄 ---------- */
 
 /*
  * mode에 클래스명을 주면 그 클래스를 body에 붙인 채로 인쇄한다.
  * (장보기 목록만 뽑을 때 사용)
- * afterprint를 지원하지 않는 브라우저를 위해 타이머로도 정리한다.
  */
 function printPlan(mode) {
+  /* 인앱 브라우저에서는 눌러도 아무 반응이 없으므로 대신 방법을 알려준다 */
+  if (isInAppBrowser()) {
+    openPrintGuide();
+    if (typeof gtag === 'function') {
+      gtag('event', 'print_blocked_inapp', { event_category: 'webapp' });
+    }
+    return;
+  }
+
   if (mode) document.body.classList.add(mode);
 
+  let timer = null;
   let done = false;
   const cleanup = () => {
     if (done) return;
     done = true;
     if (mode) document.body.classList.remove(mode);
     window.removeEventListener('afterprint', cleanup);
+    window.removeEventListener('focus', cleanup);
+    clearTimeout(timer);
   };
 
+  /*
+   * 모바일은 인쇄 시트가 뜨고 사용자가 저장을 마칠 때까지 시간이 걸린다.
+   * 예전처럼 3초 뒤에 정리해버리면 '장보기 목록만'을 눌러도
+   * 그 사이 클래스가 벗겨져 전체 식단이 인쇄된다.
+   * afterprint를 우선 쓰되, 그 이벤트를 쏘지 않는 브라우저를 위해
+   * 화면으로 돌아오는 시점과 넉넉한 타이머를 함께 둔다.
+   */
   window.addEventListener('afterprint', cleanup);
-  setTimeout(cleanup, 3000);
+  window.addEventListener('focus', cleanup);
+  timer = setTimeout(cleanup, 120000);
 
   if (typeof gtag === 'function') {
     gtag('event', 'print_meal_plan', {
@@ -680,6 +854,55 @@ function printPlan(mode) {
   }
 
   window.print();
+}
+
+/* 인앱 브라우저에서 인쇄를 누른 사람에게 대안을 안내한다 */
+function openPrintGuide() {
+  $('#noticeBody').innerHTML = `
+    <h3>앱 안에서는 인쇄가 안 돼요</h3>
+    <p class="notice-lead">인스타그램이나 카카오톡 안에서 열린 창은 인쇄·PDF 저장 기능이 없습니다.
+      앱 잘못도 사이트 잘못도 아니고, 원래 그 기능이 빠져 있어요.</p>
+
+    <div class="notice-pick">
+      <button class="btn btn-primary" id="noticeCopyBtn" type="button">📋 장보기 목록 복사하기</button>
+      <p>제일 빠른 방법이에요. 복사해서 메모장이나 카톡에 붙여넣으면 마트에서 그대로 보면서 장 볼 수 있어요.</p>
+    </div>
+
+    <div class="notice-pick">
+      <button class="btn" id="noticeOpenBtn" type="button">${isAndroid() ? '🌐 브라우저로 열기' : '🔗 링크 복사하기'}</button>
+      <p>${isAndroid()
+        ? '크롬 같은 브라우저에서 열면 인쇄와 PDF 저장이 됩니다.'
+        : '사파리 주소창에 붙여넣어 주세요. 사파리에서는 인쇄와 PDF 저장이 됩니다.'}</p>
+    </div>
+
+    <p class="notice-foot">화면 오른쪽 위 <b>⋯</b> 를 눌러 <b>‘외부 브라우저에서 열기’</b>를 골라도 됩니다.</p>`;
+
+  $('#noticeModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+
+  $('#noticeCopyBtn').addEventListener('click', () => copyShoppingList(0));
+  $('#noticeOpenBtn').addEventListener('click', openInExternalBrowser);
+}
+
+function closeNotice() {
+  $('#noticeModal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function openInExternalBrowser() {
+  const url = window.location.href;
+
+  /* 안드로이드는 intent로 기본 브라우저를 띄울 수 있다 */
+  if (isAndroid()) {
+    window.location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
+    return;
+  }
+
+  /* iOS는 앱 밖으로 나가게 강제할 방법이 없어 링크 복사로 안내한다 */
+  copyText(url).then(ok => {
+    toast(ok ? '링크를 복사했어요. 사파리 주소창에 붙여넣어 주세요.'
+             : '주소창의 링크를 직접 복사해 주세요.');
+  });
 }
 
 /* ---------- 저장 / 복원 ---------- */
@@ -926,8 +1149,13 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#printAllBtn').addEventListener('click', () => printPlan(null));
   $('#printBuyBtn').addEventListener('click', () => printPlan('print-shopping-only'));
 
-  /* 식단표 안의 클릭은 한곳에서 처리한다 (칸별 재뽑기 · 레시피 보기) */
+  /* 식단표 안의 클릭은 한곳에서 처리한다 (칸별 재뽑기 · 레시피 보기 · 목록 복사) */
   $('#planOutput').addEventListener('click', e => {
+    const copyBtn = e.target.closest('.buy-copy');
+    if (copyBtn) {
+      copyShoppingList(Number(copyBtn.dataset.week));
+      return;
+    }
     const rerollBtn = e.target.closest('.meal-reroll');
     if (rerollBtn) {
       const meal = rerollBtn.closest('.meal');
@@ -954,7 +1182,15 @@ document.addEventListener('DOMContentLoaded', () => {
   $('#recipeModal').addEventListener('click', e => {
     if (e.target.id === 'recipeModal') closeRecipe();
   });
+
+  $('#noticeClose').addEventListener('click', closeNotice);
+  $('#noticeModal').addEventListener('click', e => {
+    if (e.target.id === 'noticeModal') closeNotice();
+  });
+
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && !$('#recipeModal').classList.contains('hidden')) closeRecipe();
+    if (e.key !== 'Escape') return;
+    if (!$('#recipeModal').classList.contains('hidden')) closeRecipe();
+    if (!$('#noticeModal').classList.contains('hidden')) closeNotice();
   });
 });

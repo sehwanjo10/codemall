@@ -577,9 +577,9 @@ body {
   padding-left: 6px;
 }
 
-/* ---------- 조리법 창 ---------- */
+/* ---------- 바닥에서 올라오는 창 (조리법 · 안내 공용) ---------- */
 
-.recipe-overlay {
+.sheet-overlay {
   position: fixed;
   inset: 0;
   background: rgba(30, 35, 40, .55);
@@ -590,7 +590,7 @@ body {
   padding: 0;
 }
 
-.recipe-modal {
+.sheet {
   position: relative;
   background: var(--paper);
   border-radius: 20px 20px 0 0;
@@ -608,7 +608,7 @@ body {
   to   { transform: translateY(0); opacity: 1; }
 }
 
-.recipe-close {
+.sheet-close {
   position: absolute;
   top: 14px;
   right: 14px;
@@ -667,6 +667,116 @@ body {
 }
 .recipe-steps li::marker { color: var(--green); font-weight: 700; }
 
+/* ---------- 안내 창 ---------- */
+
+#noticeBody h3 {
+  margin: 0 0 8px;
+  font-size: 1.14rem;
+  font-weight: 800;
+  padding-right: 34px;
+}
+
+.notice-lead {
+  margin: 0 0 18px;
+  font-size: .9rem;
+  color: var(--muted);
+}
+
+.notice-pick {
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 13px 14px;
+  margin-bottom: 10px;
+}
+.notice-pick:first-of-type {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+.notice-pick .btn { width: 100%; padding: 12px; font-size: .95rem; }
+.notice-pick p {
+  margin: 8px 0 0;
+  font-size: .82rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.notice-pick:first-of-type p { color: #4E7A63; }
+
+.notice-foot {
+  margin: 14px 0 0;
+  font-size: .82rem;
+  color: var(--muted);
+  text-align: center;
+}
+.notice-foot b { color: var(--ink); }
+
+.copy-area {
+  font-family: inherit;
+  width: 100%;
+  border: 1.5px solid var(--green);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: .86rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--cream);
+  resize: vertical;
+  outline: none;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* ---------- 토스트 ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translate(-50%, 12px);
+  max-width: min(90vw, 420px);
+  background: var(--ink);
+  color: #fff;
+  font-size: .88rem;
+  line-height: 1.5;
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, .25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  z-index: 200;
+}
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: none; }
+  .sheet { animation: none; }
+}
+
+/* ---------- 장보기 목록 복사 ---------- */
+
+.shopping-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.shopping-head h3 { margin: 0; }
+
+.buy-copy {
+  font-family: inherit;
+  margin-left: auto;
+  flex: none;
+  border: 1.5px solid var(--green);
+  background: var(--paper);
+  color: var(--green-deep);
+  border-radius: 9px;
+  padding: 5px 11px;
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.buy-copy:active { transform: scale(.95); }
+
 /* ---------- 면책 ---------- */
 
 .disclaimer {
@@ -723,7 +833,9 @@ body {
   .result-actions,
   .print-hint,
   .warning,
-  .recipe-overlay,
+  .sheet-overlay,
+  .toast,
+  .buy-copy,
   .meal-reroll {
     display: none !important;
   }

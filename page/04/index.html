@@ -157,12 +157,22 @@
 </div>
 
 <!-- ===== 조리법 창 ===== -->
-<div class="recipe-overlay hidden" id="recipeModal">
-    <div class="recipe-modal">
-        <button class="recipe-close" id="recipeClose" type="button" aria-label="닫기">✕</button>
+<div class="sheet-overlay hidden" id="recipeModal">
+    <div class="sheet">
+        <button class="sheet-close" id="recipeClose" type="button" aria-label="닫기">✕</button>
         <div id="recipeBody"></div>
     </div>
 </div>
+
+<!-- ===== 안내 창 (인앱 브라우저에서 인쇄를 눌렀을 때) ===== -->
+<div class="sheet-overlay hidden" id="noticeModal">
+    <div class="sheet">
+        <button class="sheet-close" id="noticeClose" type="button" aria-label="닫기">✕</button>
+        <div id="noticeBody"></div>
+    </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="data.js"></script>
 <script src="recipes.js"></script>
