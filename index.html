@@ -118,16 +118,29 @@
 
     <!-- In-App Browser Escape -->
     <div class="inapp-overlay hidden" id="inappOverlay">
+        <div class="inapp-point" aria-hidden="true">
+            <span class="inapp-point-dots" id="inappDotsIcon">⋯</span>
+            <span class="inapp-point-tail"></span>
+        </div>
+
         <div class="inapp-box">
             <div class="inapp-emoji">🌐</div>
-            <h2>브라우저에서 열어드릴게요</h2>
+            <h2>브라우저에서 열어주세요</h2>
             <p class="inapp-lead">인스타그램 안에서는 <b>인쇄·PDF 저장</b>이 되지 않고<br>만든 식단도 저장되지 않습니다.</p>
-            <button type="button" class="inapp-btn" id="inappOpenBtn">브라우저로 열기</button>
-            <p class="inapp-help">버튼이 안 되면 오른쪽 위 <b>⋯</b> 를 눌러<br><b>'외부 브라우저에서 열기'</b>를 골라주세요.</p>
+
+            <ol class="inapp-steps">
+                <li><i>1</i><span>오른쪽 위 <b id="inappDotsInline">⋯</b> 를 누르세요</span></li>
+                <li><i>2</i><span><b>‘외부 브라우저에서 열기’</b>를 고르세요</span></li>
+            </ol>
+
+            <button type="button" class="inapp-btn" id="inappOpenBtn">자동으로 열어보기</button>
+            <p class="inapp-fail hidden" id="inappFail">자동 열기를 앱이 막고 있어요.<br>위 <b>1 → 2</b> 방법으로 열어주세요.</p>
+
             <div class="inapp-url hidden" id="inappUrlBox">
                 <p>또는 아래 주소를 눌러 복사한 뒤 브라우저 주소창에 붙여넣으세요.</p>
                 <textarea id="inappUrl" readonly rows="2"></textarea>
             </div>
+
             <button type="button" class="inapp-stay" id="inappStayBtn">그냥 여기서 볼게요</button>
         </div>
     </div>

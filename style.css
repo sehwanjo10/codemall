@@ -654,14 +654,16 @@ body {
 
 /* ============================================================
    인앱 브라우저 탈출 안내
-   인스타·카톡 안에서 열렸을 때 크롬·사파리로 넘기기 위한 화면
+   인스타·카톡 안에서 열렸을 때 외부 브라우저로 넘기기 위한 화면.
+   자동 이동은 앱이 막는 경우가 많아, 확실히 되는 ⋯ 메뉴 안내를
+   화면의 주인공으로 둔다.
    ============================================================ */
 
 .inapp-overlay {
     position: fixed;
     inset: 0;
     z-index: 2000;
-    background: rgba(20, 18, 30, 0.72);
+    background: rgba(20, 18, 30, 0.78);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     display: flex;
@@ -672,59 +674,149 @@ body {
 
 .inapp-overlay.hidden { display: none; }
 
+/* 실제 ⋯ 버튼이 있는 오른쪽 위를 가리키는 표시 */
+.inapp-point {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: inappNudge 1.4s ease-in-out infinite;
+}
+
+.inapp-point-dots {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1.5px solid rgba(255, 255, 255, 0.55);
+    border-radius: 10px;
+    padding: 2px 10px 6px;
+}
+
+.inapp-point-tail {
+    width: 2px;
+    height: 26px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0));
+    margin-top: 2px;
+}
+
+@keyframes inappNudge {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50%      { transform: translateY(-5px); opacity: 0.75; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .inapp-point { animation: none; }
+}
+
 .inapp-box {
     background: #fff;
     border-radius: 22px;
-    padding: 32px 24px 22px;
+    padding: 30px 22px 20px;
     width: 100%;
-    max-width: 360px;
+    max-width: 348px;
     text-align: center;
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
 }
 
-.inapp-emoji { font-size: 2.6rem; line-height: 1; }
+.inapp-emoji { font-size: 2.4rem; line-height: 1; }
 
 .inapp-box h2 {
-    margin: 12px 0 10px;
-    font-size: 1.3rem;
+    margin: 10px 0 8px;
+    font-size: 1.28rem;
     font-weight: 800;
     color: #2A2F36;
     letter-spacing: -0.02em;
 }
 
 .inapp-lead {
-    margin: 0 0 22px;
-    font-size: 0.92rem;
+    margin: 0 0 20px;
+    font-size: 0.88rem;
     line-height: 1.6;
     color: #7A838F;
     word-break: keep-all;
 }
 .inapp-lead b { color: #2A2F36; }
 
+/* 확실히 동작하는 방법 — 화면의 주인공 */
+.inapp-steps {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 16px 14px;
+    background: #F4F2FF;
+    border: 1.5px solid #DCD6FF;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.inapp-steps li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #2A2F36;
+    word-break: keep-all;
+}
+
+.inapp-steps i {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #6C5CE7;
+    color: #fff;
+    font-style: normal;
+    font-size: 0.76rem;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+}
+
+.inapp-steps b { color: #4834D4; font-weight: 700; }
+
+/* 자동 열기가 막힌 게 확인되면 안내를 더 도드라지게 */
+.inapp-overlay.inapp-manual .inapp-steps {
+    background: #EFEBFF;
+    border-color: #6C5CE7;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.14);
+}
+
 .inapp-btn {
     font-family: inherit;
     display: block;
     width: 100%;
-    padding: 16px;
-    font-size: 1.05rem;
+    padding: 13px;
+    font-size: 0.95rem;
     font-weight: 700;
-    color: #fff;
-    background: linear-gradient(135deg, #6C5CE7 0%, #4834D4 100%);
-    border: 0;
-    border-radius: 14px;
+    color: #4834D4;
+    background: #fff;
+    border: 1.5px solid #CFC6F5;
+    border-radius: 13px;
     cursor: pointer;
-    box-shadow: 0 6px 18px rgba(72, 52, 212, 0.32);
 }
 .inapp-btn:active { transform: translateY(1px); }
 
-.inapp-help {
-    margin: 16px 0 0;
-    font-size: 0.82rem;
-    line-height: 1.6;
-    color: #9AA1AB;
+.inapp-overlay.inapp-manual .inapp-btn {
+    color: #AAB0B8;
+    border-color: #E4E7EC;
+}
+
+.inapp-fail {
+    margin: 10px 0 0;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: #D9534F;
     word-break: keep-all;
 }
-.inapp-help b { color: #6C5CE7; font-weight: 700; }
+.inapp-fail.hidden { display: none; }
+.inapp-fail b { font-weight: 800; }
 
 .inapp-url {
     margin-top: 16px;
@@ -734,7 +826,7 @@ body {
 .inapp-url.hidden { display: none; }
 .inapp-url p {
     margin: 0 0 8px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: #9AA1AB;
     word-break: keep-all;
 }
@@ -744,7 +836,7 @@ body {
     border: 1.5px solid #E4E7EC;
     border-radius: 10px;
     padding: 10px 12px;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     line-height: 1.5;
     color: #2A2F36;
     background: #F8F9FB;
@@ -756,11 +848,11 @@ body {
 
 .inapp-stay {
     font-family: inherit;
-    margin-top: 18px;
+    margin-top: 16px;
     background: none;
     border: 0;
     color: #B0B6BE;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     text-decoration: underline;
     cursor: pointer;
     padding: 4px;

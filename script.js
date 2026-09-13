@@ -24,35 +24,51 @@
     var url = window.location.href;
 
     var overlay = document.getElementById('inappOverlay');
-    var openBtn = document.getElementById('inappOpenBtn');
-    var stayBtn = document.getElementById('inappStayBtn');
-    var urlBox = document.getElementById('inappUrlBox');
-    var urlField = document.getElementById('inappUrl');
     if (!overlay) return;
+
+    var openBtn  = document.getElementById('inappOpenBtn');
+    var stayBtn  = document.getElementById('inappStayBtn');
+    var failMsg  = document.getElementById('inappFail');
+    var urlBox   = document.getElementById('inappUrlBox');
+    var urlField = document.getElementById('inappUrl');
 
     overlay.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     if (urlField) urlField.value = url;
 
+    // 안드로이드 인스타는 점 세 개가 세로(⋮)로 표시된다
+    if (isAndroid) {
+        var dots = ['inappDotsIcon', 'inappDotsInline'];
+        for (var i = 0; i < dots.length; i++) {
+            var el = document.getElementById(dots[i]);
+            if (el) el.textContent = '⋮';
+        }
+    }
+
+    /*
+     * 자동 이동은 앱이 막는 경우가 많다. (특히 iOS 인스타)
+     * 그래서 되면 좋고 안 되면 마는 보조 수단으로만 쓰고,
+     * 화면의 주인공은 확실히 동작하는 ⋯ 메뉴 안내로 둔다.
+     */
     var jump = function () {
         if (isAndroid) {
-            // 안드로이드는 intent로 크롬을 직접 띄운다
             window.location.href = 'intent://' + url.replace(/^https?:\/\//, '')
                 + '#Intent;scheme=https;package=com.android.chrome;end';
         } else {
-            // iOS는 사파리 전용 스킴으로 빠져나간다
             window.location.href = 'x-safari-' + url;
         }
+
+        // 1.2초 뒤에도 화면이 그대로면 앱이 막은 것이다. 솔직히 알리고 수동 방법을 강조한다.
+        setTimeout(function () {
+            if (document.hidden) return;
+            if (failMsg) failMsg.classList.remove('hidden');
+            if (urlBox) urlBox.classList.remove('hidden');
+            overlay.classList.add('inapp-manual');
+        }, 1200);
     };
 
-    // 들어오자마자 한 번 시도한다.
-    // 앱이 사용자 조작 없는 이동을 막으면 그대로 남으므로, 버튼으로 다시 시도하게 한다.
+    // 들어오자마자 한 번만 조용히 시도한다 (안드로이드는 대체로 이 단계에서 넘어간다)
     setTimeout(jump, 150);
-
-    // 자동 이동이 안 먹힌 경우를 대비해 주소 복사 칸을 조금 뒤에 보여준다
-    setTimeout(function () {
-        if (urlBox) urlBox.classList.remove('hidden');
-    }, 2500);
 
     if (openBtn) openBtn.addEventListener('click', jump);
 
