@@ -1,3 +1,87 @@
+/* ============================================================
+   인앱 브라우저 탈출
+   ------------------------------------------------------------
+   인스타그램·카카오톡 안에 내장된 브라우저에서는 세 가지가 망가진다.
+   1) target="_blank"가 새 탭을 못 열어, 쿠팡으로 넘어가면 돌아오지 못한다
+   2) window.print()가 구현되어 있지 않아 인쇄·PDF 저장이 안 된다
+   3) 클립보드 복사가 조용히 실패해서 링크 복사도 되지 않는다
+   그래서 들어오자마자 크롬·사파리로 넘긴다.
+
+   쿠팡 모달 로직은 전혀 건드리지 않는다. 외부 브라우저에서 새 세션으로
+   똑같이 동작하고, 오히려 거기서는 새 탭이 정상적으로 열려 제대로 작동한다.
+   ============================================================ */
+(function escapeInAppBrowser() {
+    var ua = navigator.userAgent || '';
+    var isInApp = /Instagram|FBAN|FBAV|FB_IAB|KAKAOTALK|NAVER\(inapp|Line\/|DaumApps|everytimeApp/i.test(ua);
+    if (!isInApp) return;
+
+    // '여기서 볼게요'를 고른 사람에게는 다시 묻지 않는다
+    try {
+        if (sessionStorage.getItem('inapp_stay') === 'true') return;
+    } catch (e) { /* 저장소가 막혀 있으면 그냥 진행 */ }
+
+    var isAndroid = /Android/i.test(ua);
+    var url = window.location.href;
+
+    var overlay = document.getElementById('inappOverlay');
+    var openBtn = document.getElementById('inappOpenBtn');
+    var stayBtn = document.getElementById('inappStayBtn');
+    var urlBox = document.getElementById('inappUrlBox');
+    var urlField = document.getElementById('inappUrl');
+    if (!overlay) return;
+
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    if (urlField) urlField.value = url;
+
+    var jump = function () {
+        if (isAndroid) {
+            // 안드로이드는 intent로 크롬을 직접 띄운다
+            window.location.href = 'intent://' + url.replace(/^https?:\/\//, '')
+                + '#Intent;scheme=https;package=com.android.chrome;end';
+        } else {
+            // iOS는 사파리 전용 스킴으로 빠져나간다
+            window.location.href = 'x-safari-' + url;
+        }
+    };
+
+    // 들어오자마자 한 번 시도한다.
+    // 앱이 사용자 조작 없는 이동을 막으면 그대로 남으므로, 버튼으로 다시 시도하게 한다.
+    setTimeout(jump, 150);
+
+    // 자동 이동이 안 먹힌 경우를 대비해 주소 복사 칸을 조금 뒤에 보여준다
+    setTimeout(function () {
+        if (urlBox) urlBox.classList.remove('hidden');
+    }, 2500);
+
+    if (openBtn) openBtn.addEventListener('click', jump);
+
+    if (urlField) {
+        urlField.addEventListener('click', function () {
+            urlField.select();
+            urlField.setSelectionRange(0, 99999);
+        });
+    }
+
+    if (stayBtn) {
+        stayBtn.addEventListener('click', function () {
+            try { sessionStorage.setItem('inapp_stay', 'true'); } catch (e) {}
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+            if (typeof gtag === 'function') {
+                gtag('event', 'inapp_stay', { 'event_category': 'navigation' });
+            }
+        });
+    }
+
+    if (typeof gtag === 'function') {
+        gtag('event', 'inapp_escape_shown', {
+            'event_category': 'navigation',
+            'platform': isAndroid ? 'android' : 'ios'
+        });
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Search Functionality
     const searchInput = document.getElementById('searchInput');

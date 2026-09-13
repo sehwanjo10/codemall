@@ -890,19 +890,44 @@ function closeNotice() {
 }
 
 function openInExternalBrowser() {
-  const url = window.location.href;
+  var url = window.location.href;
 
-  /* 안드로이드는 intent로 기본 브라우저를 띄울 수 있다 */
   if (isAndroid()) {
-    window.location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;end';
+    /* 안드로이드는 intent로 크롬을 직접 띄운다 */
+    window.location.href = 'intent://' + url.replace(/^https?:\/\//, '')
+      + '#Intent;scheme=https;package=com.android.chrome;end';
     return;
   }
 
-  /* iOS는 앱 밖으로 나가게 강제할 방법이 없어 링크 복사로 안내한다 */
-  copyText(url).then(ok => {
-    toast(ok ? '링크를 복사했어요. 사파리 주소창에 붙여넣어 주세요.'
-             : '주소창의 링크를 직접 복사해 주세요.');
+  /* iOS는 사파리 전용 스킴으로 나가본다 */
+  window.location.href = 'x-safari-' + url;
+
+  /*
+   * 스킴이 막히면 화면이 그대로 남는다. 이때 클립보드 복사까지 조용히 실패하면
+   * 사용자는 예전에 복사해 둔 엉뚱한 주소를 붙여넣게 된다.
+   * 그래서 주소를 눈에 보이게 띄워 직접 복사하도록 한다.
+   */
+  setTimeout(function () { openUrlFallback(url); }, 800);
+}
+
+/* 주소를 화면에 띄워 손으로 복사할 수 있게 한다 */
+function openUrlFallback(url) {
+  $('#noticeBody').innerHTML = `
+    <h3>주소를 복사해 주세요</h3>
+    <p class=notice-lead>아래 주소를 눌러 전체 선택한 뒤 복사해서,
+      사파리나 크롬 주소창에 붙여넣어 주세요.</p>
+    <textarea class=copy-area id=copyArea readonly rows=3></textarea>
+    <p class=notice-foot>화면 오른쪽 위 <b>⋯</b> → <b>‘외부 브라우저에서 열기’</b>를 눌러도 됩니다.</p>`;
+
+  var area = $('#copyArea');
+  area.value = url;
+  area.addEventListener('click', function () {
+    area.select();
+    area.setSelectionRange(0, 999999);
   });
+
+  $('#noticeModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
 }
 
 /* ---------- 저장 / 복원 ---------- */
