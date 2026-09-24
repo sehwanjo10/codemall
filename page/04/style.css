@@ -577,6 +577,31 @@ body {
   padding-left: 6px;
 }
 
+/* 재료 알약 옆에 붙는 쿠팡 바로가기 */
+.buy-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.buy-link {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--paper);
+  font-size: .85rem;
+  text-decoration: none;
+}
+.buy-link:active { transform: scale(.92); }
+
+.buy-disclosure {
+  margin-top: 12px;
+  font-size: .72rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 /* ---------- 바닥에서 올라오는 창 (조리법 · 안내 공용) ---------- */
 
 .sheet-overlay {
@@ -962,6 +987,7 @@ body {
   .buy-qty { color: #000; font-size: 8.5pt; font-weight: 700; }
   .buy-qty-soft { color: #666; font-weight: 400; }
   .buy-cut { color: #555; font-size: 7.5pt; }
+  .buy-link, .buy-disclosure { display: none !important; }
   .shopping-desc { color: #444; font-size: 8pt; margin-bottom: 6px; }
 
   .dish-time { background: none !important; color: #666; font-size: 7pt; padding: 0; }

@@ -489,19 +489,27 @@ function renderDayCard(day, index) {
     </article>`;
 }
 
+/* 파트너스 링크가 아직 없는 재료는 일반 쿠팡 검색으로 보낸다 */
+function buyLink(name) {
+  return (typeof ING_LINKS !== 'undefined' && ING_LINKS[name])
+    || 'https://www.coupang.com/np/search?q=' + encodeURIComponent(name);
+}
+
 function renderShoppingList(grouped, weekIndex) {
   const sections = Object.keys(ING_CATEGORIES)
     .filter(cat => grouped[cat] && grouped[cat].length)
     .map(cat => {
       const meta = ING_CATEGORIES[cat];
       const items = grouped[cat]
-        .map(item => `<li><label class="buy-item">
+        .map(item => `<li class="buy-row"><label class="buy-item">
             <input type="checkbox">
             <span class="buy-name">${item.name}</span>
             ${item.qty ? `<span class="buy-qty">${item.qty}</span>`
                        : `<span class="buy-qty buy-qty-soft">적당량</span>`}
             ${item.cuts.length ? `<span class="buy-cut">${item.cuts.join(', ')}</span>` : ''}
-          </label></li>`)
+          </label><a class="buy-link" href="${buyLink(item.name)}" target="_blank"
+               rel="sponsored noopener" data-ing="${item.name}"
+               aria-label="${item.name} 쿠팡에서 보기">🛒</a></li>`)
         .join('');
       return `<div class="buy-group">
           <h4>${meta.emoji} ${meta.label}</h4>
@@ -519,6 +527,7 @@ function renderShoppingList(grouped, weekIndex) {
       </div>
       <p class="shopping-desc">${who} 기준으로 넉넉하게 올림한 <strong>어림수</strong>예요. 집 식성에 맞춰 조절하시고, 장바구니에 담으면서 체크해 보세요.</p>
       ${sections}
+      <p class="buy-disclosure">🛒를 누르면 쿠팡에서 바로 찾아볼 수 있어요. 이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
     </section>`;
 }
 
@@ -1179,6 +1188,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = e.target.closest('.buy-copy');
     if (copyBtn) {
       copyShoppingList(Number(copyBtn.dataset.week));
+      return;
+    }
+    const buyLinkEl = e.target.closest('.buy-link');
+    if (buyLinkEl) {
+      if (typeof gtag === 'function') {
+        gtag('event', 'click_ingredient_buy', { event_category: 'monetization', ingredient: buyLinkEl.dataset.ing });
+      }
       return;
     }
     const rerollBtn = e.target.closest('.meal-reroll');
