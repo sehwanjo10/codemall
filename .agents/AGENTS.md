@@ -1,9 +1,14 @@
-# Coupang Partners Modal Rule
-**CRITICAL RULE**: Do not ever modify, break, or remove the Coupang Partners popup (modal) logic when editing files in this repository. 
-The current structure works as follows and MUST be preserved at all times:
-1. When a user first visits the site and clicks any link, the Coupang Partners modal opens, and a session storage flag (`coupang_visited`) is set to true.
-2. Clicking the support button redirects the user to the Coupang affiliate link in a new tab, and then navigates them to their intended link.
-3. While browsing the site within the same session (where `coupang_visited` is true), the popup is bypassed.
-4. If the user leaves the page entirely (clearing the session storage) and returns, the popup will trigger again upon the first click.
+# 쿠팡 파트너스 링크 규칙
 
-Whenever making changes to `index.html`, `style.css`, or `script.js` (especially regarding `.intercepted-link`, `app-card`, or `.social-btn`), ensure that this logic remains fully intact and functional.
+**클릭을 가로채는 팝업·관문을 다시 만들지 않는다.** (2026-09-24 사이트 주인 결정으로 제거)
+사용자가 누른 링크는 곧바로 열려야 한다. 억지 클릭은 구매로 이어지지 않고, 쿠팡 파트너스 운영정책의 '클릭 유도'에 걸릴 위험이 있다.
+
+파트너스 링크는 사람이 이미 사고 싶어지는 자리에만 둔다.
+- 랜딩 `아빠의 추천템` — 상품은 `products.js`의 `PRODUCTS` 배열에서만 관리한다.
+- 식단표 장보기 목록의 재료별 🛒 — 링크는 `page/04/links.js`. `node tools/coupang_links.mjs`로 다시 만든다 (키는 `.env`, 커밋 금지).
+
+파트너스 링크 바로 옆(같은 화면 안)에는 고지 문구를 반드시 둔다:
+"이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
+링크에는 `target="_blank" rel="sponsored noopener"`를 붙인다.
+
+인스타 프로필 링크의 `?target=meal` 등 바로가기(`script.js`의 `TARGET_PAGES`)는 계속 동작해야 한다.

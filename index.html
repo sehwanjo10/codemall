@@ -29,14 +29,6 @@
     </div>
     
     <div class="container">
-        <!-- Search Bar -->
-        <header class="header">
-            <div class="search-bar">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" id="searchInput" placeholder="콘텐츠 또는 웹앱 검색...">
-            </div>
-        </header>
-
         <!-- Profile Section -->
         <section class="profile-section">
             <div class="profile-img-container">
@@ -44,77 +36,74 @@
             </div>
             <h1 class="profile-name">아빠는 외계인</h1>
             <p class="profile-bio">🥸 아빠의 서랍장 — 실험과 모험의 기록들</p>
-            
+
             <div class="social-links">
-                <a href="https://www.youtube.com/@et_dad" class="social-btn youtube intercepted-link" target="_blank" aria-label="유튜브">
+                <a href="https://www.youtube.com/@et_dad" class="social-btn youtube" target="_blank" rel="noopener" aria-label="유튜브" data-social="youtube">
                     <i class="fa-brands fa-youtube"></i>
                 </a>
-                <a href="https://www.instagram.com/et.dad/" class="social-btn instagram intercepted-link" target="_blank" aria-label="인스타그램">
+                <a href="https://www.instagram.com/et.dad/" class="social-btn instagram" target="_blank" rel="noopener" aria-label="인스타그램" data-social="instagram">
                     <i class="fa-brands fa-instagram"></i>
                 </a>
             </div>
         </section>
 
-
+        <!-- Featured: 식단표 -->
+        <a href="./page/04/index.html" class="feature-card app-card">
+            <span class="feature-badge">가장 많이 쓰는 도구</span>
+            <div class="feature-top">
+                <div class="feature-icon">🍱</div>
+                <div class="app-details">
+                    <h3>우리 아이 식단표</h3>
+                    <p>나이 · 계절 · 알레르기에 맞춰 한 달 식단을 짜 주고, 장보기 목록까지 만들어 드려요.</p>
+                </div>
+            </div>
+            <span class="feature-cta">식단 짜러 가기 <i class="fa-solid fa-arrow-right"></i></span>
+        </a>
 
         <!-- Web Apps Section -->
         <section class="section">
             <h2 class="section-title"><i class="fa-solid fa-rocket"></i> 웹앱 모음</h2>
-            <p class="section-desc">영상에 소개되었던 유용한 도구들을 직접 사용해보세요!</p>
+            <p class="section-desc">영상에 소개되었던 도구들, 바로 써 보세요.</p>
             <div class="grid-container" id="appContainer">
-                <a href="./page/01/index.html" class="app-card intercepted-link" target="_self">
+                <a href="./page/01/index.html" class="app-card">
                     <div class="app-icon">🏎️</div>
                     <div class="app-details">
                         <h3>자동차 로고 월드컵</h3>
                         <p>우리 아이의 성향을 알아보는 로고 월드컵! (관찰 결과 포함)</p>
                     </div>
                 </a>
-                <a href="./page/02/index.html" class="app-card intercepted-link" target="_self">
+                <a href="./page/02/index.html" class="app-card">
                     <div class="app-icon">🐸</div>
                     <div class="app-details">
                         <h3>청개구리 공부법</h3>
                         <p>아이가 스스로 책 펴게 만드는 아빠의 대화 비법 공개</p>
                     </div>
                 </a>
-                <a href="./page/03/treasure-words.html" class="app-card intercepted-link" target="_self">
+                <a href="./page/03/treasure-words.html" class="app-card">
                     <div class="app-icon">🪙</div>
                     <div class="app-details">
                         <h3>보물 글자 놀이</h3>
                         <p>문장을 조각내서 아이와 함께하는 보물찾기 놀이</p>
                     </div>
                 </a>
-                <a href="./page/04/index.html" class="app-card intercepted-link" target="_self">
-                    <div class="app-icon">🍱</div>
-                    <div class="app-details">
-                        <h3>우리 아이 식단표</h3>
-                        <p>나이 · 계절 · 알레르기 맞춤 식단과 장보기 목록 자동 생성</p>
-                    </div>
-                </a>
-            </div>
-            <div id="noResults" class="no-results hidden">
-                <i class="fa-regular fa-face-frown"></i>
-                <p>검색 결과가 없습니다.</p>
             </div>
         </section>
-        
+
+        <!-- Picks Section: 상품은 products.js 에서 관리 -->
+        <section class="section" id="picksSection">
+            <h2 class="section-title"><i class="fa-solid fa-bag-shopping"></i> 아빠의 추천템</h2>
+            <p class="section-desc">집에서 직접 써 보고 고른 물건들이에요.</p>
+            <div class="pick-tabs hidden" id="pickTabs" role="tablist"></div>
+            <div class="pick-grid" id="pickGrid"></div>
+            <p class="pick-disclosure">이 칸의 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+        </section>
+
         <!-- Footer -->
         <footer class="footer">
             <p>이 포스팅은 쿠팡 파트너스 활동의 일환으로,<br>이에 따른 일정액의 수수료를 제공받습니다.</p>
             <p class="copyright">© 아빠는 외계인. All rights reserved.</p>
         </footer>
     </div>
-
-    <!-- Coupang Support Modal -->
-    <div class="modal-overlay hidden" id="coupangModal">
-        <div class="modal-content">
-            <button class="modal-close" id="modalClose"><i class="fa-solid fa-xmark"></i></button>
-            <div class="modal-icon">👨‍👧</div>
-            <h2>아빠와 이안이 응원하기!</h2>
-            <p>이 콘텐츠는 무료로 제공됩니다.<br>아래 버튼을 눌러 <strong>쿠팡을 한 번 구경해 주시면</strong><br>채널 운영과 이안이 간식에 큰 힘이 됩니다! 🍪</p>
-            <a href="https://link.coupang.com/a/eTRm2BNzEG" target="_blank" rel="noopener noreferrer" class="support-btn" id="supportBtn">쿠팡 구경하고 바로 이동하기</a>
-        </div>
-    </div>
-
 
     <!-- In-App Browser Escape -->
     <div class="inapp-overlay hidden" id="inappOverlay">
@@ -145,6 +134,7 @@
         </div>
     </div>
 
+    <script src="products.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
