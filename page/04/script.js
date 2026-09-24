@@ -447,6 +447,7 @@ function renderDish(dish) {
       <span class="dish-name">${dish.name}</span>
       <span class="dish-time">${time}분</span>
       ${nutrientTags(dish)}
+      <span class="dish-go" aria-hidden="true">›</span>
     </li>`;
 }
 
@@ -463,7 +464,7 @@ function renderMeal(day, dayIndex, type) {
       <div class="meal-label">
         <span>${type.emoji} ${type.label}</span>
         <span class="meal-total" title="같이 끓이고 볶는 시간을 감안한 어림값">약 ${estimate}분</span>
-        <button class="meal-reroll" type="button" title="이 끼니만 다시 뽑기">🎲</button>
+        <button class="meal-reroll" type="button" title="이 끼니만 다시 뽑기" aria-label="${type.label} 다시 뽑기">🎲</button>
       </div>
       <ul class="dish-list">${riceItem}${meal.dishes.map(renderDish).join('')}</ul>
     </div>`;
@@ -509,7 +510,7 @@ function renderShoppingList(grouped, weekIndex) {
             ${item.cuts.length ? `<span class="buy-cut">${item.cuts.join(', ')}</span>` : ''}
           </label><a class="buy-link" href="${buyLink(item.name)}" target="_blank"
                rel="sponsored noopener" data-ing="${item.name}"
-               aria-label="${item.name} 쿠팡에서 보기">🛒</a></li>`)
+               aria-label="${item.name} 쿠팡에서 보기">쿠팡 ›</a></li>`)
         .join('');
       return `<div class="buy-group">
           <h4>${meta.emoji} ${meta.label}</h4>
@@ -523,11 +524,14 @@ function renderShoppingList(grouped, weekIndex) {
   return `<section class="shopping">
       <div class="shopping-head">
         <h3>🛒 이만큼만 사시면 됩니다</h3>
-        <button class="buy-copy" type="button" data-week="${weekIndex}">📋 복사</button>
       </div>
-      <p class="shopping-desc">${who} 기준으로 넉넉하게 올림한 <strong>어림수</strong>예요. 집 식성에 맞춰 조절하시고, 장바구니에 담으면서 체크해 보세요.</p>
+      <p class="shopping-desc">${who} 기준으로 넉넉하게 올림한 <strong>어림수</strong>예요. 산 건 체크하고, <strong>쿠팡 ›</strong>을 누르면 바로 찾아볼 수 있어요.</p>
+      <div class="shopping-tools">
+        <button class="buy-copy" type="button" data-week="${weekIndex}">📋 목록 복사</button>
+        <button class="buy-print" type="button">🖨️ 인쇄</button>
+      </div>
       ${sections}
-      <p class="buy-disclosure">🛒를 누르면 쿠팡에서 바로 찾아볼 수 있어요. 이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+      <p class="buy-disclosure">'쿠팡 ›' 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
     </section>`;
 }
 
@@ -549,6 +553,23 @@ function renderPlan() {
   }).join('');
 
   $('#planOutput').innerHTML = html;
+  updateShopCount();
+}
+
+/* 장보기 탭에 살 재료 개수를 보여준다 */
+function updateShopCount() {
+  $('#shopCount').textContent = $$('#planOutput .buy-row').length || '';
+}
+
+/* 식단표 ↔ 장보기 전환. 둘 다 같은 주차 묶음 안에 있고, 보이는 쪽만 바꾼다. */
+function setView(view) {
+  $('#planOutput').className = 'view-' + view;
+  $('#result').dataset.view = view;
+  $$('.view-tab').forEach(tab => {
+    const on = tab.dataset.view === view;
+    tab.classList.toggle('on', on);
+    tab.setAttribute('aria-selected', on);
+  });
 }
 
 /* 한 칸만 새로 그린다 */
@@ -573,6 +594,7 @@ function refreshMeal(dayIndex, mealCode) {
     wrap2.innerHTML = renderShoppingList(buildShoppingList(chunk), weekIndex);
     shopping.replaceWith(wrap2.firstElementChild);
   }
+  updateShopCount();
 }
 
 function conditionTags() {
@@ -628,7 +650,10 @@ function openRecipe(dishName) {
 
   const ingList = dish.ing.map(([name, cat]) => {
     const qty = amountFor(baseIngredient(name), cat, 1) || '적당량';
-    return `<li><span>${name}</span><b>${qty}</b></li>`;
+    const base = baseIngredient(name);
+    return `<li><span>${name}</span><b>${qty}</b>
+        <a class="buy-link" href="${buyLink(base)}" target="_blank" rel="sponsored noopener"
+           data-ing="${base}" aria-label="${base} 쿠팡에서 보기">쿠팡 ›</a></li>`;
   }).join('');
 
   const allergenNote = dish.al.length
@@ -648,7 +673,8 @@ function openRecipe(dishName) {
     <h4>재료</h4>
     <ul class="recipe-ing">${ingList}</ul>
     <h4>이렇게 만들어요</h4>
-    <ol class="recipe-steps">${steps.map(s => `<li>${s}</li>`).join('')}</ol>`;
+    <ol class="recipe-steps">${steps.map(s => `<li>${s}</li>`).join('')}</ol>
+    <p class="buy-disclosure">'쿠팡 ›' 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>`;
 
   $('#recipeModal').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
@@ -1056,6 +1082,21 @@ function updateSeasonBadge() {
   $('#seasonBadge').textContent = `${season.label} 제철 재료로`;
 }
 
+/* 접어 둔 '더 자세히 설정'에 지금 값이 무엇인지 한 줄로 보여준다 */
+function updateMoreSummary() {
+  const period = PERIODS.find(p => p.days === state.days);
+  const focus  = FOCUS_PRESETS.find(f => f.code === state.focus);
+  const limit  = TIME_LIMITS.find(t => t.value === state.weekdayLimit);
+  const excluded = state.allergens.length + state.dislikes.length;
+  $('#moreSummary').textContent = [
+    `${state.month}월`,
+    period ? period.label : `${state.days}일`,
+    `평일 ${limit ? limit.label : state.weekdayLimit + '분'}`,
+    focus.label,
+    excluded ? `제외 ${excluded}개` : '알레르기 없음',
+  ].join(' · ');
+}
+
 function buildForm() {
   $('#ageChips').innerHTML = AGE_GROUPS
     .map(a => chipHtml(a.code, a.label, a.desc, state.ages.includes(a.code))).join('');
@@ -1093,6 +1134,7 @@ function buildForm() {
   bindMulti($('#allergyChips'), v => { state.allergens = v; }, false);
 
   $('#dislikeInput').value = state.dislikes.join(', ');
+  updateMoreSummary();
 }
 
 /* ---------- 실행 ---------- */
@@ -1105,8 +1147,10 @@ function readDislikes() {
 function showResult() {
   renderResultTags();
   renderPlan();
+  setView('plan');
   $('#setup').classList.add('hidden');
   $('#result').classList.remove('hidden');
+  document.body.classList.remove('on-setup');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -1154,6 +1198,13 @@ document.addEventListener('DOMContentLoaded', () => {
   restoreSettings();
   buildForm();
   initSavedPlanBanner();
+  document.body.classList.add('on-setup');
+
+  /* 폼 안에서 무엇이든 바뀌면 접힌 요약도 갱신 (각 칩의 처리가 먼저 끝난 뒤) */
+  ['click', 'change', 'input'].forEach(type => $('#setup').addEventListener(type, () => {
+    if (type === 'input') readDislikes();
+    updateMoreSummary();
+  }));
 
   $('#generateBtn').addEventListener('click', () => {
     if (typeof gtag === 'function') {
@@ -1171,17 +1222,44 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPlan = generatePlan();
     renderPlan();
     savePlan();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast('새 조합으로 다시 짰어요.');
   });
 
   $('#backBtn').addEventListener('click', () => {
     $('#result').classList.add('hidden');
     $('#setup').classList.remove('hidden');
+    document.body.classList.add('on-setup');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   $('#printAllBtn').addEventListener('click', () => printPlan(null));
-  $('#printBuyBtn').addEventListener('click', () => printPlan('print-shopping-only'));
+
+  const switchView = view => {
+    setView(view);
+    $('.view-tabs').scrollIntoView({ block: 'start', behavior: 'smooth' });
+    if (view === 'shop' && typeof gtag === 'function') {
+      gtag('event', 'view_shopping_tab', { event_category: 'webapp' });
+    }
+  };
+  $('.view-tabs').addEventListener('click', e => {
+    const tab = e.target.closest('.view-tab');
+    if (tab) switchView(tab.dataset.view);
+  });
+  $('#goShopBtn').addEventListener('click', () => switchView('shop'));
+
+  /* 쿠팡 링크 클릭 기록 — 장보기 목록과 조리법 창 양쪽에서 */
+  const trackBuy = e => {
+    const link = e.target.closest('.buy-link');
+    if (link && typeof gtag === 'function') {
+      gtag('event', 'click_ingredient_buy', {
+        event_category: 'monetization',
+        ingredient: link.dataset.ing,
+        from: link.closest('#recipeBody') ? 'recipe' : 'shopping',
+      });
+    }
+    return !!link;
+  };
+  $('#recipeBody').addEventListener('click', trackBuy);
 
   /* 식단표 안의 클릭은 한곳에서 처리한다 (칸별 재뽑기 · 레시피 보기 · 목록 복사) */
   $('#planOutput').addEventListener('click', e => {
@@ -1190,13 +1268,11 @@ document.addEventListener('DOMContentLoaded', () => {
       copyShoppingList(Number(copyBtn.dataset.week));
       return;
     }
-    const buyLinkEl = e.target.closest('.buy-link');
-    if (buyLinkEl) {
-      if (typeof gtag === 'function') {
-        gtag('event', 'click_ingredient_buy', { event_category: 'monetization', ingredient: buyLinkEl.dataset.ing });
-      }
+    if (e.target.closest('.buy-print')) {
+      printPlan('print-shopping-only');
       return;
     }
+    if (trackBuy(e)) return;
     const rerollBtn = e.target.closest('.meal-reroll');
     if (rerollBtn) {
       const meal = rerollBtn.closest('.meal');

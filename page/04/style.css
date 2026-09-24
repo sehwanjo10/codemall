@@ -51,8 +51,13 @@ body {
 
 .hero {
   text-align: center;
-  padding: 22px 0 30px;
+  padding: 18px 0 22px;
 }
+
+/* 결과를 보는 동안에는 소개 문구 대신 식단이 먼저 보이게 */
+body:not(.on-setup) .hero { padding-bottom: 14px; }
+body:not(.on-setup) .hero-emoji,
+body:not(.on-setup) .hero-sub { display: none; }
 
 .back-link {
   display: inline-block;
@@ -60,11 +65,12 @@ body {
   text-decoration: none;
   font-size: .88rem;
   font-weight: 500;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
+  padding: 6px 4px;
 }
 .back-link:hover { color: var(--green-deep); }
 
-.hero-emoji { font-size: 3rem; line-height: 1; }
+.hero-emoji { font-size: 2.6rem; line-height: 1; }
 
 .hero h1 {
   margin: 10px 0 8px;
@@ -127,13 +133,19 @@ body {
   margin-left: 32px;
 }
 .chips-col { flex-direction: column; align-items: stretch; }
+.chips-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
 
 .chip {
   font-family: inherit;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2px;
   text-align: left;
+  min-height: 44px;
   padding: 10px 14px;
   border: 1.5px solid var(--line);
   border-radius: 12px;
@@ -154,7 +166,7 @@ body {
 .chip-desc  { font-size: .76rem; color: var(--muted); }
 .chip.on .chip-desc { color: var(--green-deep); }
 
-.chips-sm .chip { padding: 8px 12px; }
+.chips-sm .chip { padding: 8px 12px; min-height: 40px; }
 .chips-sm .chip-label { font-size: .85rem; font-weight: 500; }
 .chips-sm .chip.on {
   border-color: #E0574A;
@@ -195,7 +207,7 @@ body {
   gap: 8px;
   border: 1.5px solid var(--line);
   border-radius: 12px;
-  padding: 7px 12px;
+  padding: 5px 10px;
   background: var(--paper);
 }
 
@@ -204,8 +216,8 @@ body {
 
 .stepper-btn {
   font-family: inherit;
-  width: 26px;
-  height: 26px;
+  width: 34px;
+  height: 34px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--cream);
@@ -289,14 +301,75 @@ body {
 .cta:active { transform: translateY(1px); box-shadow: 0 3px 10px rgba(47, 158, 104, .25); }
 
 .cta-note {
-  margin: 10px 0 0;
+  margin: 6px 0 0;
   text-align: center;
-  font-size: .82rem;
+  font-size: .76rem;
   color: var(--muted);
 }
 
+/* 설정 화면에서는 만들기 버튼이 늘 화면 아래에 떠 있다 */
+.cta-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  padding: 12px 18px calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(251, 248, 243, 0) 0%, var(--cream) 22%);
+}
+.cta-bar .cta { max-width: 684px; margin: 0 auto; }
+body.on-setup { padding-bottom: 110px; }
+
+/* ---------- 더 자세히 설정 (접힘) ---------- */
+
+.more {
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--cream);
+  margin-bottom: 8px;
+}
+
+.more > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 14px 44px 14px 16px;
+  position: relative;
+  min-height: 44px;
+}
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary::after {
+  content: '⌄';
+  position: absolute;
+  right: 16px;
+  top: 12px;
+  font-size: 1.2rem;
+  color: var(--muted);
+  transition: transform .15s;
+}
+.more[open] > summary::after { transform: rotate(180deg); }
+
+.more-title { font-size: .98rem; font-weight: 700; }
+.more-title em { font-style: normal; font-weight: 500; color: var(--muted); font-size: .85rem; }
+.more-summary { font-size: .8rem; color: var(--green-deep); }
+
+.more-body {
+  padding: 6px 16px 4px;
+  border-top: 1px dashed var(--line);
+  background: var(--paper);
+  border-radius: 0 0 14px 14px;
+}
+.more-body .field { margin: 18px 0 22px; }
+.more-body .field-desc,
+.more-body .chips,
+.more-body .row { margin-left: 0; }
+.more-body .text-input { width: 100%; margin-left: 0; }
+
 .btn {
   font-family: inherit;
+  min-height: 44px;
   padding: 10px 16px;
   font-size: .89rem;
   font-weight: 600;
@@ -318,15 +391,23 @@ body {
 .result-head {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding-bottom: 18px;
-  margin-bottom: 18px;
-  border-bottom: 1px solid var(--line);
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
-.result-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.result-tags {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 -20px;
+  padding: 0 20px;
+}
+.result-tags::-webkit-scrollbar { display: none; }
 
 .rtag {
+  flex: none;
+  white-space: nowrap;
   font-size: .8rem;
   font-weight: 600;
   color: var(--green-deep);
@@ -335,7 +416,6 @@ body {
   padding: 5px 11px;
 }
 
-.result-actions { display: flex; flex-direction: column; gap: 8px; }
 .action-row { display: flex; gap: 8px; }
 .action-row .btn { flex: 1; }
 
@@ -346,12 +426,69 @@ body {
 }
 
 .print-hint {
-  margin: 2px 0 0;
-  font-size: .76rem;
+  margin: 0 0 12px;
+  font-size: .8rem;
   color: var(--muted);
   text-align: center;
 }
 .print-hint strong { color: var(--green-deep); font-weight: 600; }
+
+.view-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin: 0 -8px 14px;
+  background: #F1EEE8;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(42, 47, 54, .06);
+}
+
+.view-tab {
+  font-family: inherit;
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--muted);
+  font-size: .95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.view-tab.on {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 2px 6px rgba(42, 47, 54, .1);
+}
+
+.tab-count {
+  display: inline-block;
+  min-width: 22px;
+  margin-left: 3px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--orange);
+  color: #fff;
+  font-size: .74rem;
+  line-height: 1.5;
+}
+.tab-count:empty { display: none; }
+
+@media screen {
+  .view-plan .shopping,
+  .view-shop .day-grid,
+  #result[data-view="shop"] .plan-only { display: none; }
+  .view-shop .shopping { margin-top: 0; }
+}
+
+.plan-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
 .warning {
   background: #FFF8E6;
@@ -440,13 +577,15 @@ body {
 .meal-reroll {
   font-family: inherit;
   margin-left: auto;
+  min-width: 44px;
+  min-height: 34px;
   border: 1px solid var(--line);
   background: var(--paper);
-  border-radius: 8px;
-  padding: 1px 7px;
-  font-size: .78rem;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: .92rem;
   cursor: pointer;
-  line-height: 1.4;
+  line-height: 1;
 }
 .meal-reroll:hover { border-color: var(--green); background: var(--green-soft); }
 .meal-reroll:active { transform: scale(.9); }
@@ -468,8 +607,23 @@ body {
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 3px 0;
+  min-height: 36px;
+  padding: 4px 0;
 }
+.dish + .dish { border-top: 1px solid #F3F0EA; }
+
+/* 태그가 길어 줄이 바뀌어도 › 는 늘 오른쪽 끝에 */
+.dish[data-dish] { position: relative; padding-right: 20px; }
+.dish-go {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #B9BFC7;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+.dish[data-dish]:hover .dish-go { color: var(--green); }
 
 .dish[data-dish] { cursor: pointer; border-radius: 6px; }
 .dish[data-dish]:hover .dish-name { color: var(--green-deep); text-decoration: underline; }
@@ -480,7 +634,7 @@ body {
 .dish-rice .dish-name { color: var(--muted); font-weight: 400; }
 
 .dish-time {
-  font-size: .68rem;
+  font-size: .74rem;
   font-weight: 600;
   color: var(--muted);
   background: var(--cream);
@@ -489,7 +643,7 @@ body {
 }
 
 .nu-tag {
-  font-size: .69rem;
+  font-size: .74rem;
   font-weight: 700;
   color: var(--green-deep);
   background: var(--green-soft);
@@ -533,38 +687,44 @@ body {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  background: var(--paper);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .buy-item {
-  display: inline-flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  background: var(--paper);
-  border-radius: 999px;
-  padding: 6px 12px 6px 9px;
-  font-size: .87rem;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 8px 4px 8px 12px;
+  font-size: .95rem;
   cursor: pointer;
   user-select: none;
 }
 
 .buy-item input {
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
+  flex: none;
   accent-color: var(--green);
   margin: 0;
   cursor: pointer;
 }
 
+.buy-name { font-weight: 600; }
 .buy-item input:checked ~ .buy-name {
   text-decoration: line-through;
   color: var(--muted);
+  font-weight: 400;
 }
+.buy-item input:checked ~ .buy-qty { color: var(--muted); }
 
 .buy-qty {
-  font-size: .76rem;
+  font-size: .85rem;
   font-weight: 700;
   color: var(--orange);
 }
@@ -577,23 +737,31 @@ body {
   padding-left: 6px;
 }
 
-/* 재료 알약 옆에 붙는 쿠팡 바로가기 */
+/* 재료 한 줄: 체크는 왼쪽, 쿠팡은 오른쪽 끝 */
 .buy-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 10px;
+}
+.buy-row + .buy-row { border-top: 1px solid #EEF2EF; }
+
+.buy-link {
+  flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-}
-.buy-link {
-  display: inline-grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--paper);
-  font-size: .85rem;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1.5px solid #F4C9A6;
+  background: var(--orange-soft);
+  color: #C8621B;
+  font-size: .8rem;
+  font-weight: 700;
   text-decoration: none;
+  white-space: nowrap;
 }
-.buy-link:active { transform: scale(.92); }
+.buy-link:active { transform: scale(.95); }
 
 .buy-disclosure {
   margin-top: 12px;
@@ -635,10 +803,10 @@ body {
 
 .sheet-close {
   position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 30px;
-  height: 30px;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
   border: 0;
   border-radius: 50%;
   background: var(--cream);
@@ -676,13 +844,16 @@ body {
 }
 .recipe-ing li {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 7px 2px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 2px;
   border-bottom: 1px solid var(--line);
   font-size: .9rem;
 }
+.recipe-ing span { flex: 1; }
 .recipe-ing b { color: var(--green-deep); font-weight: 700; white-space: nowrap; }
+.recipe-ing .buy-link { min-height: 30px; padding: 0 10px; font-size: .76rem; }
+#recipeBody .buy-disclosure { margin-top: 18px; }
 
 .recipe-steps { margin: 0; padding-left: 20px; }
 .recipe-steps li {
@@ -787,20 +958,28 @@ body {
 }
 .shopping-head h3 { margin: 0; }
 
-.buy-copy {
+.shopping-tools {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.buy-copy,
+.buy-print {
   font-family: inherit;
-  margin-left: auto;
-  flex: none;
+  flex: 1;
+  min-height: 42px;
   border: 1.5px solid var(--green);
   background: var(--paper);
   color: var(--green-deep);
-  border-radius: 9px;
-  padding: 5px 11px;
-  font-size: .8rem;
+  border-radius: 11px;
+  padding: 6px 11px;
+  font-size: .88rem;
   font-weight: 700;
   cursor: pointer;
 }
-.buy-copy:active { transform: scale(.95); }
+.buy-copy:active,
+.buy-print:active { transform: scale(.97); }
 
 /* ---------- 면책 ---------- */
 
@@ -823,8 +1002,9 @@ body {
 
 @media (min-width: 620px) {
   .day-grid { grid-template-columns: 1fr 1fr; }
-  .result-head { flex-direction: row; align-items: flex-start; justify-content: space-between; }
-  .result-actions { flex: none; min-width: 300px; }
+  .result-tags { margin: 0; padding: 0; flex-wrap: wrap; }
+  .plan-foot { flex-direction: row; }
+  .plan-foot .btn { flex: 1; }
   .hero h1 { font-size: 2rem; }
   .panel { padding: 30px 28px; }
 }
@@ -855,7 +1035,11 @@ body {
   /* 화면 전용 요소는 종이에서 뺀다 */
   .hero,
   #setup,
-  .result-actions,
+  .action-row,
+  .view-tabs,
+  .plan-foot,
+  .shopping-tools,
+  .dish-go,
   .print-hint,
   .warning,
   .sheet-overlay,
@@ -958,12 +1142,24 @@ body {
   .buy-group h4 { color: #000; font-size: 9pt; }
   .buy-group + .buy-group { margin-top: 8px; }
 
+  .buy-group ul {
+    display: flex;
+    flex-wrap: wrap;
+    background: none;
+    border-radius: 0;
+  }
+  .buy-row,
+  .buy-row + .buy-row { border: 0; padding: 0; }
   .buy-item {
     background: none !important;
     border: 0;
+    min-height: 0;
     padding: 1px 8px 1px 0;
     font-size: 9pt;
+    flex-wrap: nowrap;
   }
+  .dish { min-height: 0; }
+  .dish + .dish { border: 0; }
 
   /* 네이티브 체크박스는 인쇄가 들쭉날쭉해서 직접 그린다 */
   .buy-item input {

@@ -26,7 +26,7 @@
         <a href="../../index.html" class="back-link">← 아빠의 서랍장</a>
         <div class="hero-emoji">🍱</div>
         <h1>우리 아이 식단표</h1>
-        <p class="hero-sub">나이 · 계절 · 알레르기 · 필요한 영양소를 골라주세요.<br>식단표와 장보기 목록, 조리법까지 한 번에 만들어 드립니다.</p>
+        <p class="hero-sub">나이와 끼니만 고르면 끝.<br>식단표 · 장보기 목록 · 조리법까지 한 번에 만들어 드려요.</p>
     </header>
 
     <!-- ===== 설정 화면 ===== -->
@@ -47,7 +47,7 @@
         <div class="field">
             <h2 class="field-title"><span class="num">1</span> 아이는 몇 살인가요?</h2>
             <p class="field-desc">형제자매가 함께 먹는다면 모두 골라주세요. 가장 어린 아이에게 맞춰 매운 것·딱딱한 것이 빠집니다.</p>
-            <div class="chips" id="ageChips"></div>
+            <div class="chips chips-grid" id="ageChips"></div>
         </div>
 
         <div class="field">
@@ -56,69 +56,82 @@
             <div class="row">
                 <div class="stepper" id="kidsStepper">
                     <span class="stepper-label">아이</span>
-                    <button class="stepper-btn" type="button" data-dir="down">−</button>
+                    <button class="stepper-btn" type="button" data-dir="down" aria-label="아이 한 명 빼기">−</button>
                     <span class="stepper-value">1</span>
-                    <button class="stepper-btn" type="button" data-dir="up">+</button>
+                    <button class="stepper-btn" type="button" data-dir="up" aria-label="아이 한 명 더하기">+</button>
                     <span class="stepper-unit">명</span>
                 </div>
                 <div class="stepper" id="adultsStepper">
                     <span class="stepper-label">어른</span>
-                    <button class="stepper-btn" type="button" data-dir="down">−</button>
+                    <button class="stepper-btn" type="button" data-dir="down" aria-label="어른 한 명 빼기">−</button>
                     <span class="stepper-value">2</span>
-                    <button class="stepper-btn" type="button" data-dir="up">+</button>
+                    <button class="stepper-btn" type="button" data-dir="up" aria-label="어른 한 명 더하기">+</button>
                     <span class="stepper-unit">명</span>
                 </div>
             </div>
         </div>
 
         <div class="field">
-            <h2 class="field-title"><span class="num">3</span> 언제 먹을 식단인가요?</h2>
-            <p class="field-desc">그 달의 제철 재료가 식단에 먼저 올라갑니다.</p>
-            <div class="row">
-                <label class="select-box">
-                    <span>월</span>
-                    <select id="monthSelect"></select>
-                </label>
-                <div class="season-badge" id="seasonBadge"></div>
-            </div>
-        </div>
-
-        <div class="field">
-            <h2 class="field-title"><span class="num">4</span> 며칠치가 필요하세요?</h2>
-            <div class="chips" id="periodChips"></div>
-        </div>
-
-        <div class="field">
-            <h2 class="field-title"><span class="num">5</span> 어떤 끼니를 짜 드릴까요?</h2>
+            <h2 class="field-title"><span class="num">3</span> 어떤 끼니를 짜 드릴까요?</h2>
             <p class="field-desc">어린이집·학교 급식이 있는 끼니는 빼셔도 됩니다.</p>
             <div class="chips" id="mealChips"></div>
         </div>
 
-        <div class="field">
-            <h2 class="field-title"><span class="num">6</span> 평일 저녁, 얼마나 쓸 수 있으세요?</h2>
-            <p class="field-desc">평일에는 이 시간 안에 되는 메뉴만 올리고, <strong>갈비찜·삼계탕처럼 오래 걸리는 메뉴는 주말로</strong> 보냅니다.</p>
-            <div class="chips chips-col" id="timeChips"></div>
-        </div>
+        <!-- 기본값으로도 충분한 조건은 접어 둔다 -->
+        <details class="more" id="moreSettings">
+            <summary>
+                <span class="more-title">더 자세히 설정 <em>(선택)</em></span>
+                <span class="more-summary" id="moreSummary"></span>
+            </summary>
 
-        <div class="field">
-            <h2 class="field-title"><span class="num">7</span> 요즘 무엇을 챙겨주고 싶으세요?</h2>
-            <div class="chips chips-col" id="focusChips"></div>
-        </div>
+            <div class="more-body">
+                <div class="field">
+                    <h2 class="field-title">언제 먹을 식단인가요?</h2>
+                    <p class="field-desc">그 달의 제철 재료가 식단에 먼저 올라갑니다.</p>
+                    <div class="row">
+                        <label class="select-box">
+                            <span>월</span>
+                            <select id="monthSelect"></select>
+                        </label>
+                        <div class="season-badge" id="seasonBadge"></div>
+                    </div>
+                </div>
 
-        <div class="field">
-            <h2 class="field-title"><span class="num">8</span> 알레르기가 있나요?</h2>
-            <p class="field-desc">선택한 재료가 들어간 메뉴는 식단에서 완전히 제외됩니다. 없으면 그냥 넘어가세요.</p>
-            <div class="chips chips-sm" id="allergyChips"></div>
-        </div>
+                <div class="field">
+                    <h2 class="field-title">며칠치가 필요하세요?</h2>
+                    <div class="chips" id="periodChips"></div>
+                </div>
 
-        <div class="field">
-            <h2 class="field-title"><span class="num">9</span> 그 밖에 빼고 싶은 재료가 있나요?</h2>
-            <p class="field-desc">아이가 유난히 안 먹는 재료를 쉼표(,)로 구분해 적어주세요. 예: 오이, 버섯, 가지</p>
-            <input type="text" id="dislikeInput" class="text-input" placeholder="오이, 버섯, 가지" autocomplete="off">
-        </div>
+                <div class="field">
+                    <h2 class="field-title">평일 저녁, 얼마나 쓸 수 있으세요?</h2>
+                    <p class="field-desc">평일에는 이 시간 안에 되는 메뉴만 올리고, <strong>갈비찜·삼계탕처럼 오래 걸리는 메뉴는 주말로</strong> 보냅니다.</p>
+                    <div class="chips chips-col" id="timeChips"></div>
+                </div>
 
-        <button id="generateBtn" class="cta">식단표 만들기</button>
-        <p class="cta-note">버튼을 누를 때마다 매번 새로운 조합이 나옵니다.</p>
+                <div class="field">
+                    <h2 class="field-title">요즘 무엇을 챙겨주고 싶으세요?</h2>
+                    <div class="chips chips-col" id="focusChips"></div>
+                </div>
+
+                <div class="field">
+                    <h2 class="field-title">알레르기가 있나요?</h2>
+                    <p class="field-desc">선택한 재료가 들어간 메뉴는 식단에서 완전히 제외됩니다. 없으면 그냥 넘어가세요.</p>
+                    <div class="chips chips-sm" id="allergyChips"></div>
+                </div>
+
+                <div class="field">
+                    <h2 class="field-title">그 밖에 빼고 싶은 재료가 있나요?</h2>
+                    <p class="field-desc">아이가 유난히 안 먹는 재료를 쉼표(,)로 구분해 적어주세요.</p>
+                    <input type="text" id="dislikeInput" class="text-input" placeholder="예: 오이, 버섯, 가지" autocomplete="off">
+                </div>
+            </div>
+        </details>
+
+        <!-- 화면 아래에 늘 떠 있는 만들기 버튼 -->
+        <div class="cta-bar">
+            <button id="generateBtn" class="cta" type="button">🍱 식단표 만들기</button>
+            <p class="cta-note">나머지는 알아서 맞춰 드려요 · 누를 때마다 새 조합</p>
+        </div>
     </section>
 
     <!-- ===== 결과 화면 ===== -->
@@ -128,21 +141,26 @@
 
         <div class="result-head">
             <div class="result-tags" id="resultTags"></div>
-            <div class="result-actions">
-                <div class="action-row">
-                    <button id="rerollBtn" class="btn btn-primary">🎲 전체 다시 뽑기</button>
-                    <button id="backBtn" class="btn">조건 바꾸기</button>
-                </div>
-                <div class="action-row">
-                    <button id="printAllBtn" class="btn btn-print">🖨️ 전체 인쇄</button>
-                    <button id="printBuyBtn" class="btn btn-print">🛒 장보기 목록만</button>
-                </div>
-                <p class="print-hint">메뉴를 누르면 <strong>조리법</strong>이, 🎲를 누르면 <strong>그 끼니만</strong> 다시 나옵니다.</p>
+            <div class="action-row">
+                <button id="rerollBtn" class="btn btn-primary" type="button">🎲 전체 다시 뽑기</button>
+                <button id="backBtn" class="btn" type="button">조건 바꾸기</button>
             </div>
         </div>
 
+        <!-- 식단 / 장보기 전환 -->
+        <div class="view-tabs" role="tablist">
+            <button type="button" role="tab" class="view-tab on" data-view="plan" aria-selected="true">🍱 식단표</button>
+            <button type="button" role="tab" class="view-tab" data-view="shop" aria-selected="false">🛒 장보기 <span class="tab-count" id="shopCount"></span></button>
+        </div>
+
         <div id="warning" class="warning hidden"></div>
-        <div id="planOutput"></div>
+        <p class="print-hint plan-only">메뉴를 누르면 <strong>조리법</strong>이, 🎲를 누르면 <strong>그 끼니만</strong> 새로 나와요.</p>
+        <div id="planOutput" class="view-plan"></div>
+
+        <div class="plan-foot plan-only">
+            <button type="button" class="btn btn-print" id="goShopBtn">🛒 이 식단 장보기 목록 보기</button>
+            <button type="button" class="btn btn-print" id="printAllBtn">🖨️ 식단표 인쇄 · PDF</button>
+        </div>
     </section>
 
     <!-- ===== 면책 ===== -->
