@@ -7,7 +7,7 @@
    3) 클립보드 복사가 조용히 실패해서 링크 복사도 되지 않는다
    그래서 들어오자마자 크롬·사파리로 넘긴다.
 
-   외부 브라우저에서는 쿠팡 링크도 새 탭으로 정상적으로 열린다.
+   외부 브라우저 모바일에서는 쿠팡 링크를 같은 탭으로 연다 (파일 맨 아래 참고).
    ============================================================ */
 (function escapeInAppBrowser() {
     var ua = navigator.userAgent || '';
@@ -185,3 +185,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (link) track('click_pick_item', { event_category: 'monetization', item_name: link.dataset.pick });
     });
 });
+
+/* ============================================================
+   모바일에서 쿠팡 링크는 같은 탭으로 연다
+   ------------------------------------------------------------
+   link.coupang.com 은 이동 중에 쿠팡 앱을 호출한다. 그런데 새 탭
+   (target="_blank")으로 열면 그 탭에는 '사용자가 누른 동작'이 없어서
+   iOS 크롬·사파리가 앱 호출을 막고 "문제가 발생했습니다. 애플리케이션을
+   열 수 없습니다" 창을 띄운다. 같은 탭으로 열면 누른 동작이 그대로
+   이어져 앱이 열리고, 앱이 없으면 쿠팡 모바일 웹으로 넘어간다.
+   파트너스 링크 주소는 그대로라 수수료 추적에는 영향이 없다.
+   ============================================================ */
+(function openCoupangInSameTabOnMobile() {
+    if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '')) return;
+    document.addEventListener('click', function (e) {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        var a = e.target.closest && e.target.closest('a[href]');
+        if (!a || !/^https:\/\/(link|www|m)\.coupang\.com\//.test(a.href)) return;
+        e.preventDefault();
+        var href = a.href;
+        // 클릭 기록(gtag)이 먼저 나가도록 한 박자 늦게 이동한다
+        setTimeout(function () { window.location.href = href; }, 50);
+    });
+})();
