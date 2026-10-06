@@ -18,6 +18,5 @@ const PRODUCTS = [
     note: '아침마다 시리얼·오트밀을 아이가 직접 받아 먹어요.',
     img: 'https://thumbnail.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/3795/5c10ea46aa5e334bc54627b572c3e6a581519861a4cc4084630d2dbdd004.jpeg',
     url: 'https://link.coupang.com/a/hjfJCi5HLo',
-    badge: '영상 공개 예정',
   },
 ];
