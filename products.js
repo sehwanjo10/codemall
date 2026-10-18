@@ -29,7 +29,7 @@ const PRODUCTS = [
   {
     cat: '아이방',
     name: '레이디가구 스칸딕 데일리 원목침대 SS',
-    note: '아이 침대로 쓰고 있는 핀란드산 소나무 원목침대예요. 함께 쓰는 제품은 연희데코 것인데 쿠팡에는 없어서 이름만 적어 둘게요.',
+    note: '아이 침대로 쓰고 있는 핀란드산 소나무 원목침대예요.',
     img: 'picks/scandic-daily-bed-ss.jpg',
     url: 'https://link.coupang.com/a/hXIcnisZEG',
   },
