@@ -26,4 +26,13 @@ const PRODUCTS = [
     img: 'https://thumbnail.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/image_audit/stage/manual/9ccb8584-c833-4a29-ba9b-b659b3c35f9e_1779863730936.jpeg',
     url: 'https://link.coupang.com/a/hXCIm9z5zg',
   },
+  /* 파트너스 링크(url)·사진(img)을 받으면 주석을 풀고 TODO 를 채운다
+  {
+    cat: '아이방',
+    name: '레이디가구 스칸딕 데일리 원목침대 SS',
+    note: '아이 침대로 쓰고 있는 핀란드산 소나무 원목침대예요. 함께 쓰는 제품은 연희데코 것인데 쿠팡에는 없어서 이름만 적어 둘게요.',
+    img: 'TODO',
+    url: 'TODO',
+  },
+  */
 ];
