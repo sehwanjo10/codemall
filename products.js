@@ -19,4 +19,11 @@ const PRODUCTS = [
     img: 'https://thumbnail.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/3795/5c10ea46aa5e334bc54627b572c3e6a581519861a4cc4084630d2dbdd004.jpeg',
     url: 'https://link.coupang.com/a/hjfJCi5HLo',
   },
+  {
+    cat: '놀이·생활',
+    name: '카라즈 논슬립 패드',
+    note: '거실 바닥에 깔아 두니 아이가 뛰어도 밀리지 않고 층간소음 걱정이 줄었어요.',
+    img: 'https://thumbnail.coupangcdn.com/thumbnails/remote/492x492ex/image/vendor_inventory/image_audit/stage/manual/9ccb8584-c833-4a29-ba9b-b659b3c35f9e_1779863730936.jpeg',
+    url: 'https://link.coupang.com/a/hXCIm9z5zg',
+  },
 ];
