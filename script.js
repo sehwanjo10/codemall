@@ -172,7 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .filter(p => !cat || p.cat === cat)
             .map(p => `<article class="pick-card">
                 <a class="pick-thumb" href="${escapeHtml(p.url)}" target="_blank" rel="sponsored noopener" data-pick="${escapeHtml(p.name)}">
-                    <img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" loading="lazy" referrerpolicy="no-referrer">
+                    ${p.img
+                        ? `<img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" loading="lazy" referrerpolicy="no-referrer">`
+                        : '<span class="pick-noimg"><i class="fa-solid fa-bag-shopping"></i></span>'}
                     ${p.badge ? `<span class="pick-badge">${escapeHtml(p.badge)}</span>` : ''}
                 </a>
                 <div class="pick-body">
