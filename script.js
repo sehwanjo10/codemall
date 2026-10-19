@@ -145,6 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
             app_name: card.querySelector('h3')?.textContent || 'App',
         }));
     });
+    document.querySelector('.meal-shortcut')?.addEventListener('click', () => track('click_meal_shortcut', {
+        event_category: 'content',
+    }));
     document.querySelectorAll('.social-btn').forEach(btn => {
         btn.addEventListener('click', () => track('click_social', {
             event_category: 'content',
