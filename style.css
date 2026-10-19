@@ -151,11 +151,14 @@ body {
     text-decoration: none;
     font-size: 15px;
     font-weight: 700;
+    line-height: 1.35;
     text-align: left;
+    word-break: keep-all;
 }
 .meal-shortcut-icon { font-size: 22px; }
 .meal-shortcut small {
     display: block;
+    margin-top: 3px;
     font-size: 12px;
     font-weight: 500;
     color: var(--text-secondary);
