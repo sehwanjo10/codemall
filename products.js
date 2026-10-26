@@ -33,4 +33,11 @@ const PRODUCTS = [
     img: 'picks/scandic-daily-bed-ss.jpg',
     url: 'https://link.coupang.com/a/hXIcnisZEG',
   },
+  {
+    cat: '놀이·생활',
+    name: '코시 무선 블루투스 마이크 + 미러볼 세트',
+    note: '집에서 아이랑 노래방 놀이할 때 써요. 미러볼에 케이스까지 같이 와요.',
+    img: 'picks/cosy-bluetooth-mic-set.jpg',
+    url: 'https://link.coupang.com/a/iaxnGsricm',
+  },
 ];
