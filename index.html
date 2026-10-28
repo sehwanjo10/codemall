@@ -58,7 +58,11 @@
             <h2 class="section-title"><i class="fa-solid fa-bag-shopping"></i> 아빠의 추천템</h2>
             <p class="section-desc">집에서 직접 써 보고 고른 물건들이에요.</p>
             <div class="pick-tabs hidden" id="pickTabs" role="tablist"></div>
-            <div class="pick-grid" id="pickGrid"></div>
+            <div class="pick-scroller">
+                <button type="button" class="pick-nav pick-prev" id="pickPrev" aria-label="이전 상품"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="pick-grid" id="pickGrid"></div>
+                <button type="button" class="pick-nav pick-next" id="pickNext" aria-label="다음 상품"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
             <p class="pick-disclosure">이 칸의 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
         </section>
 
