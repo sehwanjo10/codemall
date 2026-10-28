@@ -208,6 +208,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     renderPicks('');
 
+    /* PC 화살표: 한 번에 보이는 폭만큼 넘기고, 끝에 닿으면 그쪽 화살표를 숨긴다 */
+    const pickPrev = document.getElementById('pickPrev');
+    const pickNext = document.getElementById('pickNext');
+    const updatePickNav = () => {
+        const max = pickGrid.scrollWidth - pickGrid.clientWidth;
+        pickPrev.disabled = pickGrid.scrollLeft <= 8; // 스냅이 첫 카드 앞 여백(4px)만큼 밀어 둔다
+        pickNext.disabled = pickGrid.scrollLeft >= max - 8;
+    };
+    pickPrev.addEventListener('click', () => pickGrid.scrollBy({ left: -pickGrid.clientWidth * 0.8, behavior: 'smooth' }));
+    pickNext.addEventListener('click', () => pickGrid.scrollBy({ left: pickGrid.clientWidth * 0.8, behavior: 'smooth' }));
+    pickGrid.addEventListener('scroll', updatePickNav, { passive: true });
+    window.addEventListener('resize', updatePickNav);
+    pickTabs.addEventListener('click', () => { pickGrid.scrollLeft = 0; updatePickNav(); });
+    updatePickNav();
+
     pickGrid.addEventListener('click', e => {
         const link = e.target.closest('[data-pick]');
         if (link) track('click_pick_item', { event_category: 'monetization', item_name: link.dataset.pick });

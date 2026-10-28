@@ -586,6 +586,34 @@ body {
     scroll-snap-align: start;
 }
 
+/* PC(마우스)에서는 가로로 넘길 방법이 없으니 좌우 화살표를 둔다.
+   터치 기기에서는 손가락으로 넘기면 되므로 숨긴다 */
+.pick-scroller { position: relative; }
+.pick-nav { display: none; }
+@media (hover: hover) and (pointer: fine) {
+    .pick-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 40%;
+        transform: translateY(-50%);
+        z-index: 2;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 143, 163, 0.3);
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--accent);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    .pick-prev { left: -14px; }
+    .pick-next { right: -14px; }
+    .pick-nav:disabled { opacity: 0; pointer-events: none; }
+}
+
 .pick-card {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
