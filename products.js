@@ -43,7 +43,7 @@ const PRODUCTS = [
   {
     cat: '놀이·생활',
     name: '부스터 ISOFIX 주니어 카시트',
-    note: '키가 큰 아이에게 가장 필요한 카시트예요.',
+    note: '키 커서 꽉 끼던 카시트 대신 바꿨어요. 아이소픽스로 딸깍 체결하면 힘껏 당겨도 꿈쩍 안 하고, I-Size·KC 인증까지 받았어요.',
     img: 'picks/buddy-isofix-booster-seat.jpg',
     url: 'https://link.coupang.com/a/ivZfJVHa8W',
   },
