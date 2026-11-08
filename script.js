@@ -155,8 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }));
     });
 
-    /* 4. 아빠의 추천템 — products.js 의 PRODUCTS 로 카드를 그린다 */
-    const picks = typeof PRODUCTS !== 'undefined' ? PRODUCTS : [];
+    /* 4. 아빠의 추천템 — products.js 의 PRODUCTS 로 카드를 그린다
+       배열 맨 아래에 붙인 상품이 가장 최근 것이므로, 거꾸로 뒤집어 최신순으로 보여준다 */
+    const picks = typeof PRODUCTS !== 'undefined' ? [...PRODUCTS].reverse() : [];
     const picksSection = document.getElementById('picksSection');
     const pickGrid = document.getElementById('pickGrid');
     const pickTabs = document.getElementById('pickTabs');
@@ -193,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /* 카테고리가 두 개 이상일 때만 탭을 보여준다 */
-    const cats = [...new Set(picks.map(p => p.cat))];
+    const cats = [...new Set(PRODUCTS.map(p => p.cat))]; // 탭 순서는 등록 순서 그대로
     if (cats.length > 1) {
         pickTabs.innerHTML = ['전체', ...cats]
             .map((c, i) => `<button type="button" role="tab" class="pick-tab${i ? '' : ' active'}" data-cat="${i ? escapeHtml(c) : ''}">${escapeHtml(c)}</button>`)
