@@ -40,4 +40,11 @@ const PRODUCTS = [
     img: 'picks/cosy-bluetooth-mic-set.jpg',
     url: 'https://link.coupang.com/a/iaxnGsricm',
   },
+  {
+    cat: '놀이·생활',
+    name: '부스터 ISOFIX 주니어 카시트',
+    note: '아이소픽스 딸깍 체결, 유럽 I-Size·KC 인증까지 받은 키 큰 아이 카시트예요.',
+    img: 'picks/buddy-isofix-booster-seat.jpg',
+    url: 'https://link.coupang.com/a/ivZfJVHa8W',
+  },
 ];
