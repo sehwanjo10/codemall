@@ -40,4 +40,11 @@ const PRODUCTS = [
     img: 'picks/cosy-bluetooth-mic-set.jpg',
     url: 'https://link.coupang.com/a/iaxnGsricm',
   },
+  {
+    cat: '놀이·생활',
+    name: '부스터 ISOFIX 주니어 카시트',
+    note: 'ISOFIX로 차에 단단히 고정되고, 가벼워서 차를 옮겨 탈 때도 금방 옮겨 달 수 있어요.',
+    img: 'picks/buddy-isofix-booster-seat.jpg',
+    url: 'https://link.coupang.com/a/ivZfJVHa8W',
+  },
 ];
