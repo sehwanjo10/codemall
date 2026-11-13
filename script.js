@@ -6,13 +6,14 @@
    랜딩 페이지는 인앱에서도 문제없으니 들어오자마자 막지 않고,
    식단표로 넘어가려는 순간에만 크롬·사파리로 넘기자고 안내한다.
 
-   외부 브라우저 모바일에서는 쿠팡 링크를 같은 탭으로 연다 (파일 맨 아래 참고).
+   쿠팡 링크 여는 방법은 coupang.js 에 있다.
    ============================================================ */
 var MEAL_PAGE = './page/04/index.html';
 
 var InAppEscape = (function () {
     var ua = navigator.userAgent || '';
-    var isInApp = /Instagram|FBAN|FBAV|FB_IAB|KAKAOTALK|NAVER\(inapp|Line\/|DaumApps|everytimeApp/i.test(ua);
+    // 유튜브 등 앱 안 브라우저 판별은 coupang.js 와 같이 쓴다
+    var isInApp = window.isInAppBrowserUA ? window.isInAppBrowserUA() : false;
     var isAndroid = /Android/i.test(ua);
 
     // '여기서 볼게요'를 고른 사람에게는 다시 묻지 않는다
@@ -229,26 +230,3 @@ document.addEventListener('DOMContentLoaded', () => {
         if (link) track('click_pick_item', { event_category: 'monetization', item_name: link.dataset.pick });
     });
 });
-
-/* ============================================================
-   모바일에서 쿠팡 링크는 같은 탭으로 연다
-   ------------------------------------------------------------
-   link.coupang.com 은 이동 중에 쿠팡 앱을 호출한다. 그런데 새 탭
-   (target="_blank")으로 열면 그 탭에는 '사용자가 누른 동작'이 없어서
-   iOS 크롬·사파리가 앱 호출을 막고 "문제가 발생했습니다. 애플리케이션을
-   열 수 없습니다" 창을 띄운다. 같은 탭으로 열면 누른 동작이 그대로
-   이어져 앱이 열리고, 앱이 없으면 쿠팡 모바일 웹으로 넘어간다.
-   파트너스 링크 주소는 그대로라 수수료 추적에는 영향이 없다.
-   ============================================================ */
-(function openCoupangInSameTabOnMobile() {
-    if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '')) return;
-    document.addEventListener('click', function (e) {
-        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        var a = e.target.closest && e.target.closest('a[href]');
-        if (!a || !/^https:\/\/(link|www|m)\.coupang\.com\//.test(a.href)) return;
-        e.preventDefault();
-        var href = a.href;
-        // 클릭 기록(gtag)이 먼저 나가도록 한 박자 늦게 이동한다
-        setTimeout(function () { window.location.href = href; }, 50);
-    });
-})();
