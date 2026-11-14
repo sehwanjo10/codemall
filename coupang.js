@@ -9,11 +9,10 @@
       → 같은 탭으로 연다.
 
    2) 유튜브·인스타·카톡 같은 앱 안의 브라우저(인앱)
-      앱 호출 자체를 처리하지 못한다. "다른 애플리케이션을 열려고
-      합니다"를 허용해도 결국 "애플리케이션을 열 수 없습니다"로 끝나고
-      쿠팡 웹으로 넘어가지도 않는다.
-      → 쿠팡 링크를 크롬(안드로이드)·사파리(iOS)로 넘겨서 연다.
-        자동으로 안 넘어가면 '⋯ → 외부 브라우저로 열기'와 링크 복사를 안내한다.
+      → 누르자마자 크롬(안드로이드)·사파리(iOS)로 조용히 넘긴다.
+      → 넘길 수 없는 앱(iOS 인스타 등)은 일반 링크처럼 그 자리에서 바로 쿠팡을 연다.
+      안내 창·링크 복사 같은 중간 단계는 띄우지 않는다. 한 번 누르면 끝.
+      쿠팡이 안 열려서 뒤로 돌아온 사람에게만 아래쪽에 작은 띠를 보여 준다.
 
    어느 경우든 파트너스 링크 주소는 그대로라 수수료 추적에는 영향이 없다.
    ============================================================ */
@@ -40,122 +39,155 @@
         return /^https:\/\/(link|www|m)\.coupang\.com\//.test(href);
     };
 
-    /* 크롬·사파리로 넘긴다. 앱이 막으면 화면이 그대로 남는다. */
-    var openOutside = function (url) {
-        if (isAndroid) {
-            window.location.href = 'intent://' + url.replace(/^https?:\/\//, '')
-                + '#Intent;scheme=https;package=com.android.chrome;end';
-        } else {
-            window.location.href = 'x-safari-' + url;
+    var PENDING_KEY = 'cp_pending';
+    var store = {
+        set: function (v) { try { sessionStorage.setItem(PENDING_KEY, v); } catch (e) {} },
+        take: function () {
+            try {
+                var v = sessionStorage.getItem(PENDING_KEY);
+                sessionStorage.removeItem(PENDING_KEY);
+                return v;
+            } catch (e) { return null; }
         }
     };
 
-    /* ---------- 인앱 안내 창 ---------- */
+    var track = function (name, params) {
+        if (typeof gtag === 'function') gtag('event', name, params);
+    };
+
+    var isMeta = /Instagram|FBAN|FBAV|FB_IAB|Barcelona/i.test(ua);
+    var isKakao = /KAKAOTALK/i.test(ua);
+    var isLine = /Line\//i.test(ua);
+
+    /*
+     * 바깥 브라우저로 조용히 넘기는 주소. 넘길 방법이 없으면 null.
+     * - 안드로이드: 크롬 intent. 크롬이 없으면 browser_fallback_url 로 이 화면에서 연다.
+     * - 카카오톡: 공식 외부 브라우저 열기 주소.
+     * - 라인: openExternalBrowser=1 을 붙이면 라인이 알아서 밖으로 연다.
+     * - iOS 인스타·페북·스레드: x-safari- 를 앱이 막는다(실측). 기다리지 않고 바로 연다.
+     * - 그 밖의 iOS 인앱: x-safari- 로 사파리를 띄운다.
+     */
+    var outsideUrl = function (url) {
+        if (isKakao) return 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
+        if (isLine) return url + (url.indexOf('?') < 0 ? '?' : '&') + 'openExternalBrowser=1';
+        if (isAndroid) {
+            return 'intent://' + url.replace(/^https?:\/\//, '')
+                + '#Intent;scheme=https;package=com.android.chrome;'
+                + 'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+        }
+        if (isMeta) return null;
+        return 'x-safari-' + url;
+    };
+
+    /* ---------- 아래쪽 작은 띠 (이동 중 / 안 열렸을 때) ---------- */
     var css = ''
-        + '.cp-ov{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;font-family:inherit}'
-        + '.cp-ov.cp-hidden{display:none}'
-        + '.cp-box{position:relative;width:100%;max-width:440px;background:#fff;color:#222;border-radius:20px 20px 0 0;padding:26px 20px calc(22px + env(safe-area-inset-bottom));box-sizing:border-box;text-align:center;line-height:1.5}'
-        + '.cp-x{position:absolute;top:10px;right:12px;border:0;background:none;font-size:22px;color:#888;padding:6px;cursor:pointer}'
-        + '.cp-box h2{margin:0 0 8px;font-size:19px}'
-        + '.cp-box p{margin:0 0 14px;font-size:14.5px;color:#555}'
-        + '.cp-btn{display:block;width:100%;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:700;background:#e52528;color:#fff;cursor:pointer;margin-bottom:10px;font-family:inherit}'
-        + '.cp-btn.cp-sub{background:#f1f1f3;color:#222;font-weight:600}'
-        + '.cp-fail{background:#fff4e5;color:#8a5300!important;border-radius:10px;padding:10px;font-size:14px!important}'
-        + '.cp-fail.cp-hidden,.cp-url.cp-hidden{display:none}'
-        + '.cp-url{width:100%;box-sizing:border-box;border:1px solid #ddd;border-radius:10px;padding:10px;font-size:13px;resize:none;margin-bottom:10px;color:#333;background:#fafafa}';
+        + '.cp-bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9999;'
+        + 'max-width:440px;margin:0 auto;background:#222;color:#fff;border-radius:14px;padding:12px 14px;'
+        + 'display:flex;align-items:center;gap:10px;font-size:14px;line-height:1.4;box-shadow:0 6px 24px rgba(0,0,0,.25);font-family:inherit}'
+        + '.cp-bar span{flex:1}'
+        + '.cp-bar button{border:0;border-radius:10px;padding:8px 12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}'
+        + '.cp-bar .cp-go{background:#e52528;color:#fff}'
+        + '.cp-bar .cp-copy{background:#444;color:#fff}'
+        + '.cp-bar .cp-x{background:none;color:#aaa;padding:4px 2px;font-size:18px}';
 
-    var overlay, failEl, urlEl, copyBtn, current = '';
+    var bar, styled = false;
 
-    var build = function () {
-        var style = document.createElement('style');
-        style.textContent = css;
-        document.head.appendChild(style);
-
-        var dots = isAndroid ? '⋮' : '⋯';
-        var browser = isAndroid ? '크롬' : '사파리';
-        overlay = document.createElement('div');
-        overlay.className = 'cp-ov cp-hidden';
-        overlay.innerHTML = ''
-            + '<div class="cp-box" role="dialog" aria-modal="true" aria-labelledby="cpTitle">'
-            + '<button type="button" class="cp-x" aria-label="닫기">✕</button>'
-            + '<h2 id="cpTitle">쿠팡은 ' + browser + '에서 열어주세요</h2>'
-            + '<p>유튜브·인스타 같은 앱 안에서는 쿠팡이 열리지 않아요.<br>'
-            + '오른쪽 위 <b>' + dots + '</b> → <b>‘외부 브라우저로 열기’</b>를 눌러도 됩니다.</p>'
-            + '<button type="button" class="cp-btn cp-go">' + browser + '로 쿠팡 열기</button>'
-            + '<p class="cp-fail cp-hidden">앱이 자동 이동을 막고 있어요.<br>아래 링크를 복사해서 ' + browser + ' 주소창에 붙여넣어 주세요.</p>'
-            + '<textarea class="cp-url cp-hidden" readonly rows="2"></textarea>'
-            + '<button type="button" class="cp-btn cp-sub cp-copy">링크 복사하기</button>'
-            + '</div>';
-        document.body.appendChild(overlay);
-
-        failEl = overlay.querySelector('.cp-fail');
-        urlEl = overlay.querySelector('.cp-url');
-        copyBtn = overlay.querySelector('.cp-copy');
-
-        overlay.addEventListener('click', function (e) {
-            if (e.target === overlay || e.target.closest('.cp-x')) close();
-        });
-        overlay.querySelector('.cp-go').addEventListener('click', function () { tryOpen(); });
-        urlEl.addEventListener('click', function () {
-            urlEl.select();
-            urlEl.setSelectionRange(0, 99999);
-        });
-        copyBtn.addEventListener('click', copy);
+    var hideBar = function () {
+        if (bar && bar.parentNode) bar.parentNode.removeChild(bar);
+        bar = null;
     };
 
-    var close = function () {
-        overlay.classList.add('cp-hidden');
-        document.body.style.overflow = '';
+    var showBar = function (html, bind) {
+        if (!styled) {
+            var style = document.createElement('style');
+            style.textContent = css;
+            document.head.appendChild(style);
+            styled = true;
+        }
+        hideBar();
+        bar = document.createElement('div');
+        bar.className = 'cp-bar';
+        bar.setAttribute('role', 'status');
+        bar.innerHTML = html;
+        document.body.appendChild(bar);
+        if (bind) bind(bar);
     };
 
-    var showManual = function () {
-        failEl.classList.remove('cp-hidden');
-        urlEl.classList.remove('cp-hidden');
-    };
-
-    var tryOpen = function () {
-        openOutside(current);
-        // 1.2초 뒤에도 이 화면이 보이면 앱이 막은 것이다
-        setTimeout(function () {
-            if (!document.hidden) showManual();
-        }, 1200);
-    };
-
-    var copy = function () {
-        var done = function () { copyBtn.textContent = '복사했어요! 주소창에 붙여넣어 주세요'; };
-        var manual = function () {
-            showManual();
-            urlEl.select();
-            urlEl.setSelectionRange(0, 99999);
+    var copyText = function (text, btn) {
+        var done = function () { btn.textContent = '복사됨'; };
+        var fallback = function () {
+            var t = document.createElement('textarea');
+            t.value = text;
+            t.setAttribute('readonly', '');
+            t.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+            document.body.appendChild(t);
+            t.select();
+            t.setSelectionRange(0, 99999);
             try { if (document.execCommand('copy')) done(); } catch (e) {}
+            document.body.removeChild(t);
         };
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(current).then(done, manual);
+            navigator.clipboard.writeText(text).then(done, fallback);
         } else {
-            manual();
+            fallback();
         }
     };
 
-    var showInApp = function (url) {
-        if (!overlay) build();
-        current = url;
-        urlEl.value = url;
-        failEl.classList.add('cp-hidden');
-        urlEl.classList.add('cp-hidden');
-        copyBtn.textContent = '링크 복사하기';
-        overlay.classList.remove('cp-hidden');
-        document.body.style.overflow = 'hidden';
+    /*
+     * 인앱에서 쿠팡 링크를 눌렀을 때. 안내 창 없이 한 번에 연다.
+     * 바깥 브라우저로 넘길 수 있으면 넘기고, 0.7초 뒤에도 이 화면이면
+     * (앱이 막은 것) 묻지 않고 이 화면에서 바로 쿠팡으로 간다.
+     */
+    var goInApp = function (url) {
+        var platform = isAndroid ? 'android' : 'ios';
+        var direct = function () {
+            store.set(url);
+            track('coupang_inapp_direct', { event_category: 'monetization', platform: platform });
+            window.location.href = url;
+        };
 
-        if (typeof gtag === 'function') {
-            gtag('event', 'coupang_inapp_escape', {
-                event_category: 'monetization',
-                platform: isAndroid ? 'android' : 'ios'
-            });
-        }
+        var out = outsideUrl(url);
+        if (!out) { setTimeout(direct, 50); return; } // 클릭 기록이 먼저 나가게 한 박자만
 
-        // 누른 동작이 살아 있을 때 바로 한 번 넘겨본다
-        tryOpen();
+        showBar('<span>쿠팡으로 이동 중…</span>');
+        track('coupang_inapp_escape', { event_category: 'monetization', platform: platform });
+        window.location.href = out;
+
+        setTimeout(function () {
+            if (document.hidden) { hideBar(); return; } // 바깥 브라우저로 넘어감
+            direct();
+        }, 700);
     };
+
+    /* 쿠팡이 안 열려서 뒤로 돌아온 사람에게만 보여 준다 */
+    var offerRetry = function () {
+        var url = store.take();
+        if (!url || !isInApp) return;
+        var browser = isAndroid ? '크롬' : '사파리';
+        showBar(
+            '<span>쿠팡 안 열렸나요?</span>'
+            + '<button type="button" class="cp-copy">링크 복사</button>'
+            + '<button type="button" class="cp-go">다시 열기</button>'
+            + '<button type="button" class="cp-x" aria-label="닫기">✕</button>',
+            function (el) {
+                el.querySelector('.cp-go').addEventListener('click', function () {
+                    hideBar();
+                    window.location.href = url;
+                });
+                el.querySelector('.cp-copy').addEventListener('click', function (e) {
+                    copyText(url, e.currentTarget);
+                    el.querySelector('span').textContent = browser + ' 주소창에 붙여넣으세요';
+                });
+                el.querySelector('.cp-x').addEventListener('click', hideBar);
+            }
+        );
+        track('coupang_inapp_returned', { event_category: 'monetization' });
+    };
+
+    window.addEventListener('pageshow', function () {
+        hideBar();
+        offerRetry();
+    });
 
     document.addEventListener('click', function (e) {
         if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -165,7 +197,7 @@
         var href = a.href;
 
         if (isInApp) {
-            showInApp(href);
+            goInApp(href);
             return;
         }
         // 클릭 기록(gtag)이 먼저 나가도록 한 박자 늦게 이동한다

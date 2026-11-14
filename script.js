@@ -105,7 +105,9 @@ var InAppEscape = (function () {
     return {
         // 안내가 필요하면 띄우고 true, 아니면 false (그냥 이동하면 된다)
         guard: function (destHref) {
-            if (!isInApp || stayed()) return false;
+            // 들어가는 길에 안내 창을 띄우면 이탈이 커서 막지 않는다.
+            // 인쇄가 안 되는 문제는 식단표 안에서 인쇄를 누를 때 안내한다 (page/04 openPrintGuide).
+            return false;
             show(destHref);
             return true;
         }
