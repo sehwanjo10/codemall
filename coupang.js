@@ -9,8 +9,8 @@
       → 같은 탭으로 연다.
 
    2) 유튜브·인스타·카톡 같은 앱 안의 브라우저(인앱)
-      → 누르자마자 크롬(안드로이드)·사파리(iOS)로 넘겨 본다.
-      → 앱이 막으면(특히 iOS 인스타) 0.9초 뒤 그 자리에서 바로 쿠팡으로 간다.
+      → 누르자마자 크롬(안드로이드)·사파리(iOS)로 조용히 넘긴다.
+      → 넘길 수 없는 앱(iOS 인스타 등)은 일반 링크처럼 그 자리에서 바로 쿠팡을 연다.
       안내 창·링크 복사 같은 중간 단계는 띄우지 않는다. 한 번 누르면 끝.
       쿠팡이 안 열려서 뒤로 돌아온 사람에게만 아래쪽에 작은 띠를 보여 준다.
 
@@ -55,15 +55,28 @@
         if (typeof gtag === 'function') gtag('event', name, params);
     };
 
-    /* 크롬·사파리로 넘긴다. 크롬이 없으면 이 화면에서 그대로 연다. */
-    var openOutside = function (url) {
+    var isMeta = /Instagram|FBAN|FBAV|FB_IAB|Barcelona/i.test(ua);
+    var isKakao = /KAKAOTALK/i.test(ua);
+    var isLine = /Line\//i.test(ua);
+
+    /*
+     * 바깥 브라우저로 조용히 넘기는 주소. 넘길 방법이 없으면 null.
+     * - 안드로이드: 크롬 intent. 크롬이 없으면 browser_fallback_url 로 이 화면에서 연다.
+     * - 카카오톡: 공식 외부 브라우저 열기 주소.
+     * - 라인: openExternalBrowser=1 을 붙이면 라인이 알아서 밖으로 연다.
+     * - iOS 인스타·페북·스레드: x-safari- 를 앱이 막는다(실측). 기다리지 않고 바로 연다.
+     * - 그 밖의 iOS 인앱: x-safari- 로 사파리를 띄운다.
+     */
+    var outsideUrl = function (url) {
+        if (isKakao) return 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
+        if (isLine) return url + (url.indexOf('?') < 0 ? '?' : '&') + 'openExternalBrowser=1';
         if (isAndroid) {
-            window.location.href = 'intent://' + url.replace(/^https?:\/\//, '')
+            return 'intent://' + url.replace(/^https?:\/\//, '')
                 + '#Intent;scheme=https;package=com.android.chrome;'
                 + 'S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
-        } else {
-            window.location.href = 'x-safari-' + url;
         }
+        if (isMeta) return null;
+        return 'x-safari-' + url;
     };
 
     /* ---------- 아래쪽 작은 띠 (이동 중 / 안 열렸을 때) ---------- */
@@ -120,20 +133,30 @@
         }
     };
 
-    /* 인앱에서 쿠팡 링크를 눌렀을 때: 바깥 브라우저 시도 → 막히면 바로 이동 */
+    /*
+     * 인앱에서 쿠팡 링크를 눌렀을 때. 안내 창 없이 한 번에 연다.
+     * 바깥 브라우저로 넘길 수 있으면 넘기고, 0.7초 뒤에도 이 화면이면
+     * (앱이 막은 것) 묻지 않고 이 화면에서 바로 쿠팡으로 간다.
+     */
     var goInApp = function (url) {
-        showBar('<span>쿠팡으로 이동 중…</span>');
-        track('coupang_inapp_escape', { event_category: 'monetization', platform: isAndroid ? 'android' : 'ios' });
+        var platform = isAndroid ? 'android' : 'ios';
+        var direct = function () {
+            store.set(url);
+            track('coupang_inapp_direct', { event_category: 'monetization', platform: platform });
+            window.location.href = url;
+        };
 
-        openOutside(url);
+        var out = outsideUrl(url);
+        if (!out) { setTimeout(direct, 50); return; } // 클릭 기록이 먼저 나가게 한 박자만
+
+        showBar('<span>쿠팡으로 이동 중…</span>');
+        track('coupang_inapp_escape', { event_category: 'monetization', platform: platform });
+        window.location.href = out;
 
         setTimeout(function () {
-            if (document.hidden) { hideBar(); return; } // 크롬·사파리로 넘어감
-            // 앱이 막았다. 묻지 않고 이 화면에서 바로 쿠팡으로 간다.
-            store.set(url);
-            track('coupang_inapp_direct', { event_category: 'monetization', platform: isAndroid ? 'android' : 'ios' });
-            window.location.href = url;
-        }, 900);
+            if (document.hidden) { hideBar(); return; } // 바깥 브라우저로 넘어감
+            direct();
+        }, 700);
     };
 
     /* 쿠팡이 안 열려서 뒤로 돌아온 사람에게만 보여 준다 */
