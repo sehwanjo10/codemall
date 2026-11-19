@@ -48,4 +48,11 @@ const PRODUCTS = [
     img: 'picks/buddy-isofix-booster-seat.jpg',
     url: 'https://link.coupang.com/a/ivZfJVHa8W',
   },
+  {
+    cat: '주방·식사',
+    name: '알루미늄 3단 만두찜기',
+    note: '2단 찜판이라 만두·찐빵·고구마를 한 번에 넉넉히 쪄요. 가볍고 열이 빨리 올라요.',
+    img: 'picks/aluminum-dumpling-steamer.jpg',
+    url: 'https://link.coupang.com/a/iNKqcBrFgO',
+  },
 ];
